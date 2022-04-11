@@ -1,6 +1,6 @@
 # A small mod which provides some functions for my other mods.
 
-![screenshot_2](shot_01.png)
+<!-- ![screenshot_1](shot_01.png) -->
 
 ## Languages
 * english
