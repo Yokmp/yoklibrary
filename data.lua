@@ -10,24 +10,15 @@ data:extend({
   { type = "recipe-category", name = categories.casting },
 })
 
+ylib = {}
+
+
+require("util.logger")
 require("util.icons")
-yutil = require("util.util")
+require("util.util")
 require("util.functions")
-blacklist = {
-  ores = {"coal"},
-  recipes = {"concrete"}
-}
-ore = get_minable_resouces()
-
 require("util.fluids")
-require("util.recipe")
 require("util.technology")
+require("recipe.recipe")
+require("recipe.exotic")
 
-require("prototypes.vanilla.pipepictures")
-require("prototypes.vanilla.entities")
-require("prototypes.vanilla.machines")
-require("prototypes.vanilla.slag")
-require("prototypes.vanilla.technology")
-require("prototypes.vanilla.create")
-
-require("prototypes.mods.bz-mods")

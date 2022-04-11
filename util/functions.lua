@@ -21,10 +21,13 @@ function get_type(name)
 end
 
 
-function get_entity_type(entity_name) --TODO check positives instead?
+---Hopefully returns the entity type
+---@param entity_name string
+---@return string|nil
+function get_entity_type(entity_name)
   for entity_type, _ in pairs(data.raw) do
     for entity, _ in pairs(data.raw[entity_type]) do
-      if entity == entity_name
+      if entity == entity_name --TODO check positives instead?
       and entity_type ~= "item"
       and entity_type ~= "fluid"
       and entity_type ~= "recipe"
@@ -33,23 +36,30 @@ function get_entity_type(entity_name) --TODO check positives instead?
       end
     end
   end
+  return nil
 end
 
 
+---Returns true if value is in list, else returns false
+---@param value string
+---@param list table
+---@return boolean
 function is_in_list (value, list)
-  for i, v in pairs (list) do
-   if value == v then
-     return true
-   end
+  for _, v in pairs (list) do
+    if value == v then return true end
   end
   return false
 end
 
 
----returns a table containing all minable recources(*basic-solid only!*); removes the ones specified in the **blacklist**
+---Returns a table containing all minable recources(*basic-solid only!*); removes the ones specified in the **blacklist**
 ---@param filter? boolean
 ---@return table
 function get_minable_resouces(filter)
+  local blacklist = { --//*FIXME blacklist must be outside of function
+    ores = {"coal"},
+    recipes = {"concrete"}
+  }
   filter = filter or true
   local minable_resources = {}
 
@@ -86,11 +96,11 @@ end
 -- error("get_all_minable_resouces()")
 
 
----returns wether or not a given resource is minable
+---Returns wether or not a given resource is minable (is an ore)
 ---@param name string ore name
 ---@param resources? table get_minable_resources()
-local function is_ore(name, resources)
-  resources = resources or get_minable_resouces()
+function is_ore(name, resources)
+  resources = resources or get_minable_resouces(true)
 
   for key, table in pairs(resources) do
     for _, result in ipairs(table.results) do -- maybe modded resources have more than 1 result
@@ -102,65 +112,3 @@ local function is_ore(name, resources)
 end
 
 
-
-
-
-
-
-function has_fluid_box(entity_name, entity_type)
-  entity_type = entity_type or get_entity_type(entity_name)
-  if data.raw[entity_type][entity_name] then
-    return data.raw[entity_type][entity_name].fluid_boxes and true
-  end
-end
-
-function has_fluid_box_of_type(entity_name, production_type, entity_type)
-  entity_type = entity_type or get_entity_type(entity_name)
-  if has_fluid_box(entity_name, entity_type) then
-    for _, fluid_box in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
-      if fluid_box.production_type == production_type then
-        return true
-      end
-    end
-    return false
-  end
-end
-
-function get_fluid_box_amount(entity_name, entity_type)
-  entity_type = entity_type or get_entity_type(entity_name)
-  if has_fluid_box(entity_name, entity_type) then
-    return #data.raw[entity_type][entity_name].fluid_boxes
-  end
-end
-
-function get_fluid_box_amount_of_type(entity_name, production_type, entity_type)
-  entity_type = entity_type or get_entity_type(entity_name)
-  local amount = 0
-  if has_fluid_box_of_type(entity_name, production_type, entity_type) then
-    for _, fluid_box in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
-      if fluid_box.production_type == production_type then
-        amount = amount+1
-      end
-    end
-  end
-  return amount
-end
-
----Returns a table containing the amount of fluid box types
----@param entity_name string
----@param entity_type string
----@return table ``{none = i, input = i, ["input-output"] = i, output = i,}``
-function get_fluid_box_types(entity_name, entity_type)
-  entity_type = entity_type or get_entity_type(entity_name)
-  local amount = {none = 0, input = 0, ["input-output"] = 0, output = 0,}
-  if has_fluid_box(entity_name, entity_type) then
-    for _, value in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
-      amount[value.production_type] = amount[value.production_type]+1
-    end
-  end
-  return amount
-end
-
-
--- log(serpent.block(get_recipe_result_count("advanced-oil-processing")))
--- error("TEST")

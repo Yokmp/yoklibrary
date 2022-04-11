@@ -3,33 +3,44 @@
 -- TECHNOLOGY --
 ----------------
 
----Creates a new technology
+---Creates a new technology, uses localised_name or nil.
 ---@param tech_name string
 ---@param icon_name string
 ---@param prerequisites table use technology_set_parent()
 ---@param ingredient table or use technology_add_ingedient()
----@param localized_name? string item-name
+---@param localized_name table ``Format: {"prefix", "name", "suffix"}``
+---@param order? string Format ``order.."["..tech_name.."]"``
 ---@param count? number
 ---@param time? number
-function new_technology_ext(tech_name, icon_name, prerequisites, ingredient, localized_name, count, time)
+function new_technology_ext(tech_name, icon_name, prerequisites, ingredient, localized_name, order, count, time)
+  localized_name = localized_name or nil
+  order = order or ""
 
-  data:extend({
+  local technology = {
+    type = "technology",
+    name = tech_name,
+    icons = technology_icon_compose(icon_name),
+    effects = {},
+    prerequisites = prerequisites,
+    unit =
     {
-      type = "technology",
-      name = tech_name,
-      localised_name = {"", {"item-name."..localized_name}, " ", {"item-name.casting"}},
-      icons = technology_icon_compose(icon_name),
-      effects = {},
-      prerequisites = prerequisites,
-      unit =
-      {
-        count = count or 75,
-        ingredients = {ingredient},
-        time = time or 5
-      },
-      order = "c["..tech_name.."]"
+      count = count or 75,
+      ingredients = {ingredient},
+      time = time or 5
     },
-  })
+    order = order.."["..tech_name.."]"
+  }
+
+  if type(localized_name) == "table" then
+    technology.localised_name = {"",
+      {(localized_name.prefix or localized_name[1])}, " ",
+      {(localized_name.name   or localized_name[2])}, " ",
+      {(localized_name.suffix or localized_name[3])}
+    }
+  end
+
+
+  data:extend({ technology })
 end
 
 ---Wrapper for new_technology_ext(), also sets the parent technology
@@ -51,7 +62,7 @@ function technology_add_effect(technology_name, recipe_name)
     table.insert(data.raw.technology[technology_name].effects, { type = "unlock-recipe", recipe = recipe_name })
     if logging then log("added "..recipe_name.." to ".. technology_name) end
   else
-    log("Unknown technology or missing key: "..tostring(technology_name))
+    warning("Unknown technology or missing key: "..tostring(technology_name))
   end
 end
 
@@ -67,7 +78,7 @@ function technology_remove_effect(technology_name, recipe_name)
       end
     end
   else
-    log("Unknown technology or missing key: "..tostring(technology_name))
+    warning("Unknown technology or missing key: "..tostring(technology_name))
   end
 end
 
@@ -78,6 +89,8 @@ end
 function technology_add_ingredient(technology_name, ingredient, amount)
   if data.raw.technology[technology_name] then
     table.insert(data.raw.technology[technology_name].unit.ingredients, {ingredient, amount})
+  else
+    warning("Unknown technology or missing key: "..tostring(technology_name))
   end
 end
 
@@ -91,6 +104,8 @@ function technology_remove_ingredient(technology_name, ingredient)
         table.remove(data.raw.technology[technology_name].unit.ingredients, index)
       end
     end
+  else
+    warning("Unknown technology or missing key: "..tostring(technology_name))
   end
 end
 
@@ -106,7 +121,7 @@ end
 
 ---Returns which technologies enable a recipe.
 ---@param recipe_name string
----@return table technologies
+---@return table
 function get_techs_enable_recipe(recipe_name)
   local _techs = {}
   for _, value in pairs(data.raw.technology) do
@@ -118,6 +133,9 @@ function get_techs_enable_recipe(recipe_name)
       end
     end
   end
+  if not _techs then
+    warning("Unknown technology: "..tostring(recipe_name))
+  end
   return _techs
 end
 
@@ -127,8 +145,9 @@ end
 function technology_get_prerequisites(tech_name)
   if data.raw.technology[tech_name] then
     return util.table.deepcopy(data.raw.technology[tech_name].prerequisites)
+  else
+    info("Technology "..tech_name.." has no prerequisites!")
   end
-  if logging then log("Technology "..tech_name.." has no prerequisites!") end
   return {}
 end
 
@@ -144,10 +163,13 @@ function technology_set_parent(tech_name, parent_name, use_prerequisites)
     if use_prerequisites then table.insert(prereq, parent_name) end
     data.raw.technology[tech_name].prerequisites = prereq
     data.raw.technology[tech_name].unit.ingredients = util.table.deepcopy(data.raw.technology[parent_name].unit.ingredients)
+  else
+    warning(tostring(tech_name).." or "..tostring(parent_name).." do not exist!")
   end
-
 end
 
+
+--//TODO make similar to get_composed_icon
 
 ---Returns icons for technology
 ---@param icon_name string must be a valid item name
@@ -167,13 +189,12 @@ function technology_icon_compose(icon_name, size, scale, shift)
       scale = 1,
       shift = shift or {0,5}
     },
-    {
-      icon = "__Molten_Metals__/graphics/technology/molten-drop.png",
-      icon_size = size,
-      scale = 1*scale,
-      shift = {0,0}
-    },
+    -- { --TODO default to missing?
+    --   icon = "__Molten_Metals__/graphics/technology/molten-drop.png",
+    --   icon_size = size,
+    --   scale = 1*scale,
+    --   shift = {0,0}
+    -- },
   }
 end
-
 -- log(serpent.block(technology_icon_compose("aluminum-6061")))

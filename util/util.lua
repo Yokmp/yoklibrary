@@ -1,5 +1,5 @@
 
----Returns table __t__ with keys for name and amount
+---Returns table ``t`` with keys for name and amount
 ---@param t table|string ``lua {string, number?}``
 ---@return table ``{ name = "name": string, amount = n: integer }``
 function add_pairs(t)
@@ -18,8 +18,8 @@ function add_pairs(t)
   return t
 end
 
-
----@return boolean ... returns _false_ if table doesn't exists or is empty, else returns _true_
+---Returns _true_ if table contains anything
+---@return boolean
 function check_table(table)
   if not table then return false end
   if not type(table) == "table" then return false end
@@ -69,7 +69,7 @@ end
 
 function assembler1pipepictures(color)
   local tint = {}
-  if type(color) == "table" and next(color) then
+  if check_table(color) then
     tint = {
       r = color.r or 1,
       g = color.g or 1,

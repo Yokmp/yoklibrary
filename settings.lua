@@ -1,7 +1,7 @@
 data:extend({
   {
       type = "string-setting",
-      name = "ymm-logging",
+      name = "ylib-logging",
       setting_type = "startup",
       default_value = "none",
       allowed_values = {"warning", "all", "none"},
@@ -12,7 +12,7 @@ data:extend({
 
 -- local _settings
 -- for name, value in pairs(settings.startup) do
---     if string.find(tostring(name), "ymm-", 0, true) then
+--     if string.find(tostring(name), "ylib-", 0, true) then
 --         -- name = string.match(name, "^%w+%-%w+%-(%w+)")
 --         local _t = {}
 --         for word in string.gmatch(name, "[^-]+") do
@@ -23,4 +23,4 @@ data:extend({
 --     end
 -- end
 -- log(serpent.block(_settings))
--- error()
+-- error("settings")
