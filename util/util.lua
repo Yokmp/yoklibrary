@@ -69,7 +69,7 @@ end
 
 function ylib.util.assembler1pipepictures(color)
   local tint = {}
-  if util.check_table(color) then
+  if ylib.util.check_table(color) then
     tint = {
       r = color.r or 1,
       g = color.g or 1,
