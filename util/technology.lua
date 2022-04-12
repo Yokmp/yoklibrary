@@ -60,7 +60,7 @@ end
 function technology_add_effect(technology_name, recipe_name)
   if data.raw.technology[technology_name] and data.raw.technology[technology_name].effects then
     table.insert(data.raw.technology[technology_name].effects, { type = "unlock-recipe", recipe = recipe_name })
-    if logging then log("added "..recipe_name.." to ".. technology_name) end
+    if loglevel then log("added "..recipe_name.." to ".. technology_name) end
   else
     warning("Unknown technology or missing key: "..tostring(technology_name))
   end
@@ -74,7 +74,7 @@ function technology_remove_effect(technology_name, recipe_name)
     for index, value in ipairs(data.raw.technology[technology_name].effects) do
       if value.recipe == recipe_name then
         table.remove(data.raw.technology[technology_name].effects, index)
-        if logging then log("removed "..recipe_name.." from ".. technology_name) end
+        if loglevel then log("removed "..recipe_name.." from ".. technology_name) end
       end
     end
   else

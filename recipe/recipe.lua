@@ -11,7 +11,7 @@ function recipe.set_enabled(recipe_name, enabled)
   if data.raw.recipe[recipe_name] then
     data.raw.recipe[recipe_name].normal.enabled = enabled[1]
     data.raw.recipe[recipe_name].expensive.enabled = enabled[2]
-    if logging then log(recipe_name.." enabled: ".. tostring(enabled[1]) ..", ".. tostring(enabled[2])) end
+    if loglevel then log(recipe_name.." enabled: ".. tostring(enabled[1]) ..", ".. tostring(enabled[2])) end
   else
     log("Unknown recipe: "..tostring(recipe_name))
   end

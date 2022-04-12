@@ -1,36 +1,6 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.1.4
-Date: 2022-04-10
+Version: 0.0.1
+Date: 2022-04-14
   Changes:
-    - changed purple/production science pack to use the avdanced smelter instead of the electric furnace
-    - the furnace to smelter replacement is applied to every recipe (depending on your mod setting)
-    - adjusted energy usage/steam output
-    - fixed uranium smelting recipes giving 0 molten-uranium-ore (now 60 in - 120 out)
-    - updates migration so adding this mod to an existing game should be fine
-    - removed module slot from basic-smelter (steel-furnace)
-    - new tint for the advanced-caster to help distinguish between caster and furnace when using both
-    - advanced-smelter now has a custom icon
-    - fixed shadows for normal and high graphic settings
----------------------------------------------------------------------------------------------------
-Version: 0.1.3
-Date: 2022-04-08
-  Changes:
-    - removed Fluid Mixer as dependency, sorry
----------------------------------------------------------------------------------------------------
-Version: 0.1.2
-Date: 2022-04-07
-  Changes:
-    - fixed 'strone' typo, stone-brick recipe should be fine
----------------------------------------------------------------------------------------------------
-Version: 0.1.1
-Date: 2022-04-03
-  Changes:
-    - mainly balancing
-    - the time for each casting recipe is now halfed
-    - mining time for smelters and casters is now 0.5
----------------------------------------------------------------------------------------------------
-Version: 0.1.0
-Date: 2022-04-01
-  Changes:
-    - Initial release
+    - initial release
 

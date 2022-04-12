@@ -33,7 +33,7 @@ icons = {
   steam_interface     = {"steam-interface", "icons", 64, 4, 0.5},
   missing             = {"missing", "icons", 64, 4, 0.5},
 
-  missingp_tech  = {"missing-tech", "icons", 128, 0, 1},
+  missingp_tech       = {"missing-tech", "icons", 128, 0, 1},
 
   ---Returns an icon object, Use ``icons:get(name, ...)``
   ---@param self table icons table
@@ -73,7 +73,7 @@ function get_icon_from_item(item_name)  --//TODO icons.lua intergation
     elseif _item.icons then
       icon = _item.icons[1]
     end
-      if logging then log("Using icon: "..item_name.." - "..icon.icon) end
+      if loglevel then log("Using icon: "..item_name.." - "..icon.icon) end
   end
   return icon
 end

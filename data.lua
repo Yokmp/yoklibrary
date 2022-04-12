@@ -1,6 +1,6 @@
 -- require('__debugadapter__/debugadapter.lua')
 
-logging = settings.startup["ymm-logging"].value
+loglevel = settings.startup["ymm-logging"].value
 require("util.logger")
 
 ---create the categories for molten metals

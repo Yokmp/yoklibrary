@@ -1,17 +1,17 @@
 
 
-logging = logging or "none"
+loglevel = loglevel or "none"
 local function logger(level, message, description)
 
   description = tostring(description) or "nil"
 
-  if logging ~= "none" then
+  if loglevel ~= "none" then
 
-    if level == 1 and logging == "warning"  then
+    if level == 1 and loglevel == "warning"  then
       log(serpent.block(message).." - "..description)
     end
 
-    if level == 2 and logging == "all" then
+    if level == 2 and loglevel == "all" then
       log(serpent.block(message))
     end
 
