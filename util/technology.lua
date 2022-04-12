@@ -1,4 +1,6 @@
 
+--//TODO
+
 ----------------
 -- TECHNOLOGY --
 ----------------
@@ -178,7 +180,7 @@ end
 ---@param shift? table
 ---@return table
 function technology_icon_compose(icon_name, size, scale, shift)
-  local icon = get_icon_from_item(icon_name)
+  local icon = ylib.icon.get_icon_from_item(icon_name)
   size = size or 128
   scale = scale or (icon.icon_size/size)
   return {
@@ -190,7 +192,7 @@ function technology_icon_compose(icon_name, size, scale, shift)
       shift = shift or {0,5}
     },
     -- { --TODO default to missing?
-    --   icon = "__Molten_Metals__/graphics/technology/molten-drop.png",
+    --   icon = "__ylib__/graphics/technology/molten-drop.png",
     --   icon_size = size,
     --   scale = 1*scale,
     --   shift = {0,0}

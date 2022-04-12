@@ -1,8 +1,10 @@
 
+
+
 ---Returns a list of all fluids
 ---@param filter? table do only return fluids containing this string
 ---@return table
-function get_fluids(filter)
+function ylib.fluid.get_fluids(filter)
   filter = filter or {""}
   local list = {}
   for _, fluid in pairs(data.raw.fluid) do
@@ -20,7 +22,7 @@ end
 ---@param entity_name string
 ---@param entity_type? string must be set if the entity name exists in multiple types
 ---@return boolean
-function has_fluid_box(entity_name, entity_type)
+function ylib.fluid.has_fluid_box(entity_name, entity_type)
   entity_type = entity_type or get_entity_type(entity_name)
   if data.raw[entity_type][entity_name] then
     return data.raw[entity_type][entity_name].fluid_boxes and true
@@ -33,9 +35,9 @@ end
 ---@param production_type string
 ---@param entity_type? string must be set if the entity name exists in multiple types
 ---@return boolean
-function has_fluid_box_of_type(entity_name, production_type, entity_type)
+function ylib.fluid.has_fluid_box_of_type(entity_name, production_type, entity_type)
   entity_type = entity_type or get_entity_type(entity_name)
-  if has_fluid_box(entity_name, entity_type) then
+  if ylib.fluid.has_fluid_box(entity_name, entity_type) then
     for _, fluid_box in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
       if fluid_box.production_type == production_type then
         return true
@@ -50,9 +52,9 @@ end
 ---@param entity_name string
 ---@param entity_type? string
 ---@return integer
-function get_fluid_box_amount(entity_name, entity_type)
+function ylib.fluid.get_fluid_box_amount(entity_name, entity_type)
   entity_type = entity_type or get_entity_type(entity_name)
-  if has_fluid_box(entity_name, entity_type) then
+  if ylib.fluid.has_fluid_box(entity_name, entity_type) then
     return #data.raw[entity_type][entity_name].fluid_boxes
   end
   return 0
@@ -64,10 +66,10 @@ end
 ---@param production_type string
 ---@param entity_type? string
 ---@return integer
-function get_fluid_box_amount_of_type(entity_name, production_type, entity_type)
+function ylib.fluid.get_fluid_box_amount_of_type(entity_name, production_type, entity_type)
   entity_type = entity_type or get_entity_type(entity_name)
   local amount = 0
-  if has_fluid_box_of_type(entity_name, production_type, entity_type) then
+  if ylib.fluid.has_fluid_box_of_type(entity_name, production_type, entity_type) then
     for _, fluid_box in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
       if fluid_box.production_type == production_type then
         amount = amount+1
@@ -81,10 +83,10 @@ end
 ---@param entity_name string
 ---@param entity_type? string
 ---@return table ``{none = i, input = i, ["input-output"] = i, output = i,}``
-function get_fluid_box_types(entity_name, entity_type)
+function ylib.fluid.get_fluid_box_types(entity_name, entity_type)
   entity_type = entity_type or get_entity_type(entity_name)
   local amount = {none = 0, input = 0, ["input-output"] = 0, output = 0,}
-  if has_fluid_box(entity_name, entity_type) then
+  if ylib.fluid.has_fluid_box(entity_name, entity_type) then
     for _, value in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
       amount[value.production_type] = amount[value.production_type]+1
     end

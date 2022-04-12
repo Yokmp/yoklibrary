@@ -17,7 +17,7 @@
 
 
 ---@type icon
-icon_prototype = {
+local icon_prototype = {
     icon = nil,
     icon_size = nil,
     icon_mipmaps = 0,
@@ -27,7 +27,7 @@ icon_prototype = {
   }
 
 -- key = {name, folder, size, mipmaps, scale}
-icons = {
+local icons = {
 
   electric_interface  = {"electric-interface", "icons", 64, 4, 0.5},
   steam_interface     = {"steam-interface", "icons", 64, 4, 0.5},
@@ -59,7 +59,7 @@ icons = {
 ---Returns the icon as table from an item
 ---@param item_name string
 ---@return icon|nil
-function get_icon_from_item(item_name)  --//TODO icons.lua intergation
+function ylib.icon.get_icon_from_item(item_name)  --//TODO icons.lua intergation
   local icon
   local _item = data.raw.item[item_name]
   if _item then
@@ -82,7 +82,7 @@ end
 ---Returns the icon data of a fluid.
 ---@param fluid_name string
 ---@return icon
-function get_fluid_icon(fluid_name)
+function ylib.icon.get_fluid_icon(fluid_name)
   ---@type icon
   local icon
   local fluid = data.raw.fluid[fluid_name]
@@ -110,12 +110,12 @@ end
 ---@param icon_top icon|string use icons:get() if possible, can work on strings
 ---@param icon_bottom? icon defaults to molten_drop (based on icon_top.icon_size)
 ---@param shift? table default ``{{0,0}, {0,5}}``
-function get_composed_icon(icon_top, icon_bottom, scale, shift) --//*FIXME drop scaling, should consider making custom icons per metal
+function ylib.icon.get_composed_icon(icon_top, icon_bottom, scale, shift) --//*FIXME drop scaling, should consider making custom icons per metal
   scale = scale or 0.5
   shift = shift or 0
 
   if type(icon_top) == "string" then
-    icon_top = get_icon_from_item(icon_top) or get_fluid_icon(icon_top) or icons:get(icon_top)
+    icon_top = ylib.icon.get_icon_from_item(icon_top) or ylib.icon.get_fluid_icon(icon_top) or icons:get(icon_top)
   end
 
   local function determine_icon_by_type()

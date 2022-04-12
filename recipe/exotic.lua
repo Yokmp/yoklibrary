@@ -1,15 +1,14 @@
 
-
 ---Returns the output count of a specified type
 ---@param recipe_name string
 ---@param result_type? string
 ---@param format? boolean removes every key with a value of 0
 ---@return table ``{results=0, normal=0, expensive=0}``
-function recipe.get_result_count(recipe_name, result_type, format)
+function ylib.recipe.get_result_count(recipe_name, result_type, format)
   if data.raw.recipe[recipe_name] then
     result_type = result_type or "item"
     format = format or false
-    local results = recipe.get_results(recipe_name)
+    local results = ylib.recipe.get_results(recipe_name)
     local count = {results=0, normal=0, expensive=0}
     for _, value in ipairs(results.results) do
       if not value.type and result_type == "item" then count.results = count.results+1
@@ -48,7 +47,7 @@ end
 ---@param recipe_name string
 ---@param temperature table contains integers {normal, expensive}
 ---@param pattern string the string to find within the ingredient name
-function recipe.set_ingredient_temperature(recipe_name, temperature, pattern)
+function ylib.recipe.set_ingredient_temperature(recipe_name, temperature, pattern)
   pattern = pattern or ""
   if data.raw.recipe[recipe_name] then
     for index, value in ipairs(data.raw.recipe[recipe_name].normal.ingredients) do
@@ -61,7 +60,7 @@ function recipe.set_ingredient_temperature(recipe_name, temperature, pattern)
     warning("Unknown recipe: "..tostring(recipe_name))
   end
 end
--- recipe.set_ingredient_temperature("molten-iron-plate", {123,456}, "molten-")
+-- ylib.recipe.set_ingredient_temperature("molten-iron-plate", {123,456}, "molten-")
 -- log(serpent.block(data.raw.recipe["molten-iron-plate"]))
 -- error("recipe.set_ingredient_temperature()")
 
@@ -70,7 +69,7 @@ end
 ---@param recipe_name string
 ---@param temperature table contains integers {normal, expensive}
 ---@param pattern string the string to find within the ingredient name
-function recipe.set_result_temperature(recipe_name, temperature, pattern)
+function ylib.recipe.set_result_temperature(recipe_name, temperature, pattern)
   if data.raw.recipe[recipe_name] then
     for index, value in ipairs(data.raw.recipe[recipe_name].normal.results) do
       if value.type and value.type == "fluid" and string.find(value.name, pattern, 0, true) then
@@ -82,9 +81,7 @@ function recipe.set_result_temperature(recipe_name, temperature, pattern)
     warning("Unknown recipe: "..tostring(recipe_name))
   end
 end
--- recipe.set_result_temperature("molten-iron-ore", {123,456}, "molten-")
+-- ylib.recipe.set_result_temperature("molten-iron-ore", {123,456}, "molten-")
 -- log(serpent.block(data.raw.recipe["molten-iron-ore"]))
 -- error("recipe.set_result_temperature()")
-
-
 

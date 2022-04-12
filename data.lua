@@ -1,4 +1,7 @@
--- require('__debugadapter__/debugadapter.lua')
+ylib = ylib or {}
+ylib.recipe = ylib.recipe or {}
+ylib.fluid = ylib.fluid or {}
+ylib.util = ylib.util or {}
 
 loglevel = settings.startup["ymm-logging"].value
 require("util.logger")

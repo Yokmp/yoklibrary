@@ -2,7 +2,7 @@
 ---Returns table ``t`` with keys for name and amount
 ---@param t table|string ``lua {string, number?}``
 ---@return table ``{ name = "name": string, amount = n: integer }``
-function add_pairs(t)
+function ylib.util.add_pairs(t)
 
   if type(t) == "table" and t[1] then --they can be empty and would be "valid" until ...
 ---@diagnostic disable-next-line: undefined-field
@@ -20,7 +20,7 @@ end
 
 ---Returns _true_ if table contains anything
 ---@return boolean
-function check_table(table)
+function ylib.util.check_table(table)
   if not table then return false end
   if not type(table) == "table" then return false end
   if not next(table) then return false end
@@ -32,7 +32,7 @@ end
 ---@param t1 color|table
 ---@param t2 color|table
 ---@return color|table
-function mix_tints(t1, t2)
+function ylib.util.mix_tints(t1, t2)
 	local tint1 = {t1.r or t1[1] or 0, t1.g or t1[2] or 0, t1.b or t1[3] or 0, t1.a or t1[4]}
 	local tint2 = {t2.r or t2[1] or 0, t2.g or t2[2] or 0, t2.b or t2[3] or 0, t2.a or t2[4]}
   local divisor = 1.9
@@ -54,7 +54,7 @@ end
 ---@param ta table list
 ---@param tb table list
 ---@return table matches list
-function get_table_matches(ta, tb)
+function ylib.util.get_table_matches(ta, tb)
   local matches = {}
   for _, va in ipairs(ta) do
     for _, vb in ipairs(tb) do
@@ -67,9 +67,9 @@ function get_table_matches(ta, tb)
 end
 
 
-function assembler1pipepictures(color)
+function ylib.util.assembler1pipepictures(color)
   local tint = {}
-  if check_table(color) then
+  if util.check_table(color) then
     tint = {
       r = color.r or 1,
       g = color.g or 1,
