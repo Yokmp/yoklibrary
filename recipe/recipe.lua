@@ -72,7 +72,7 @@ end
 ---@param amount integer
 ---@param type? string needs to be set if the same name exists for several types
 function ylib.recipe.add_result(recipe_name, result, amount, type)
-  type = type or get_type(result)
+  type = type or ylib.util.get_type(result)
   normal = {type = type, name = result, amount = amount[1]}
   expensive = {type = type, name = result, amount = amount[2]}
   local _r = ylib.recipe.get.results(recipe_name)
@@ -208,19 +208,19 @@ function ylib.recipe.get_ingredients(recipe_name)
     if data.raw.recipe.ingredients and data.raw.recipe.ingredients then
       ingredients.ingredients = {}
       for i, ingredient in ipairs(data.raw.recipe.ingredients) do
-        ingredients.ingredients[i] = util.add_pairs(ingredient)
+        ingredients.ingredients[i] = ylib.util.add_pairs(ingredient)
       end
     end
     if data.raw.recipe.normal and data.raw.recipe.normal.ingredients then
       ingredients.normal = {}
       for i, ingredient in ipairs(data.raw.recipe.normal.ingredients) do
-        ingredients.normal[i] = util.add_pairs(ingredient)
+        ingredients.normal[i] = ylib.util.add_pairs(ingredient)
       end
     end
     if data.raw.recipe.expensive and data.raw.recipe.expensive.ingredients then
       ingredients.expensive = {}
       for i, ingredient in ipairs(data.raw.recipe.expensive.ingredients) do
-        ingredients.expensive[i] = util.add_pairs(ingredient)
+        ingredients.expensive[i] = ylib.util.add_pairs(ingredient)
       end
     end
     return ingredients
@@ -239,12 +239,12 @@ end
 ---@param item_type? string needs to be set if the same name exists for several types
 ---@return table table List of recipe names
 function ylib.recipe.get_byingredient(item_name, item_type)
-  item_type = item_type or get_type(item_name)
+  item_type = item_type or ylib.util.get_type(item_name)
   if data.raw[item_type][item_name] then
     local recipes = {}
 
     for recipe_name, data_recipe in pairs(data.raw.recipe) do
-      if util.check_table(data.raw.recipe.ingredients) then
+      if ylib.util.check_table(data.raw.recipe.ingredients) then
         for _, ingredient in ipairs(data.raw.recipe.ingredients) do
           if ingredient.name and ingredient.name == item_name then table.insert(recipes, recipe_name)
           elseif ingredient[1] and ingredient[1] == item_name then table.insert(recipes, recipe_name)
@@ -253,7 +253,7 @@ function ylib.recipe.get_byingredient(item_name, item_type)
       end
 
       if data.raw.recipe.normal then
-        if util.check_table(data.raw.recipe.normal.ingredients) then
+        if ylib.util.check_table(data.raw.recipe.normal.ingredients) then
           for _, ingredient in ipairs(data.raw.recipe.normal.ingredients) do
             if ingredient.name == item_name then table.insert(recipes, recipe_name) end
           end
@@ -261,7 +261,7 @@ function ylib.recipe.get_byingredient(item_name, item_type)
       end
 
       if data.raw.recipe.expensive then
-        if util.check_table(data.raw.recipe.expensive.ingredients) then
+        if ylib.util.check_table(data.raw.recipe.expensive.ingredients) then
           for _, ingredient in ipairs(data.raw.recipe.expensive.ingredients) do
             if ingredient.name == item_name then table.insert(recipes, recipe_name) end
           end
@@ -289,31 +289,31 @@ function ylib.recipe.get_results(recipe_name)
   if data.raw.recipe[recipe_name] then
     local data_recipe = data.raw.recipe[recipe_name]
 
-    if util.check_table(data.raw.recipe.results) then
+    if ylib.util.check_table(data.raw.recipe.results) then
       for i, result in pairs(data.raw.recipe.results) do
-        _return.results[i] = util.add_pairs( result )
+        _return.results[i] = ylib.util.add_pairs( result )
       end
     elseif data.raw.recipe.result then
-      _return.results[1] = util.add_pairs( {data.raw.recipe.result, data.raw.recipe.result_count} )
+      _return.results[1] = ylib.util.add_pairs( {data.raw.recipe.result, data.raw.recipe.result_count} )
     end
 
     if data.raw.recipe.normal then
-      if util.check_table(data.raw.recipe.normal.results) then
+      if ylib.util.check_table(data.raw.recipe.normal.results) then
         for i, result in pairs(data.raw.recipe.normal.results) do
-          _return.normal[i] = util.add_pairs( result )
+          _return.normal[i] = ylib.util.add_pairs( result )
         end
       elseif data.raw.recipe.normal.result then
-        _return.normal[1] = util.add_pairs( {data.raw.recipe.normal.result, data.raw.recipe.normal.result_count} )
+        _return.normal[1] = ylib.util.add_pairs( {data.raw.recipe.normal.result, data.raw.recipe.normal.result_count} )
       end
     end
 
     if data.raw.recipe.expensive then
-      if util.check_table(data.raw.recipe.expensive.results) then
+      if ylib.util.check_table(data.raw.recipe.expensive.results) then
         for i, result in pairs(data.raw.recipe.expensive.results) do
-          _return.expensive[i] = util.add_pairs( result )
+          _return.expensive[i] = ylib.util.add_pairs( result )
         end
       elseif data.raw.recipe.expensive.result then
-        _return.expensive[1] = util.add_pairs( {data.raw.recipe.expensive.result, data.raw.recipe.expensive.result_count} )
+        _return.expensive[1] = ylib.util.add_pairs( {data.raw.recipe.expensive.result, data.raw.recipe.expensive.result_count} )
       end
     end
 
@@ -332,7 +332,7 @@ end
 ---@param type? string needs to be set if the same name exists for several types
 ---@return table ``{results={}, normal={}, expensive={}}``
 function ylib.recipe.get_byresult(result_name, type)
-  type = type or get_type(result_name)
+  type = type or ylib.util.get_type(result_name)
   local recipes = {}
 
   if data.raw[type][result_name] then

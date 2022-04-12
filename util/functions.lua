@@ -2,7 +2,7 @@
 ---Returns the type
 ---@param name string
 ---@return string
-function get_type(name)
+function ylib.util.get_type(name)
   local type_name = nil
   if type(name) == "string" then
     local type_list = {
@@ -24,7 +24,7 @@ end
 ---Hopefully returns the entity type
 ---@param entity_name string
 ---@return string|nil
-function get_entity_type(entity_name)
+function ylib.util.get_entity_type(entity_name)
   for entity_type, _ in pairs(data.raw) do
     for entity, _ in pairs(data.raw[entity_type]) do
       if entity == entity_name --TODO check positives instead?
@@ -44,7 +44,7 @@ end
 ---@param value string
 ---@param list table
 ---@return boolean
-function is_in_list (value, list)
+function ylib.util.is_in_list (value, list)
   for _, v in pairs (list) do
     if value == v then return true end
   end

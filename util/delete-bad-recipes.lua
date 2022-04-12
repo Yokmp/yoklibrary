@@ -12,7 +12,7 @@ function pro_ingredients_or_results_iterator (ingredients_or_results)
 	local must_be_deleted  = false
 	for _, tabl in pairs (ingredients_or_results) do
 		if (tabl.type == 'item') then
-			if not (get_type (tabl.name)) then
+			if not (util.get_type (tabl.name)) then
 				must_be_deleted  = true
 				log ('  /' .. 'Found bad item! - ' .. tabl.name)
 			end
@@ -24,7 +24,7 @@ end
 function easy_results_iterator (recipe_handler, recipe_name)
 	local must_be_deleted = false
 	-- data.raw.recipe["stone-brick"].result = "stone-brick"
-	if not (get_type (recipe_handler.result)) then
+	if not (ylib.util.get_type (recipe_handler.result)) then
 		must_be_deleted  = true
 		log ('  /' .. 'Found bad item! - ' .. recipe_handler.result)
 	end
@@ -95,7 +95,7 @@ for technology_name, technology in pairs (technologies) do
 		for i, effect in pairs (effects) do
 			if (effect.type == "unlock-recipe") and (effect.recipe) then
 				local effect_recipe_name = effect.recipe
-				if not (is_in_list (effect_recipe_name, recipe_list)) then
+				if not (ylib.util.is_in_list (effect_recipe_name, recipe_list)) then
 					log ('  /' .. "'Warning!' " .. technology_name .. ' has recipe ' .. effect_recipe_name .. ' and effect must be deleted.')
 					data.raw.technology[technology_name].effects[i] = nil
 				end
