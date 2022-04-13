@@ -69,13 +69,13 @@ end
 ---Adds a result to a recipe
 ---@param recipe_name string
 ---@param result string
----@param amount integer
+---@param amount table {normal, expensive}
 ---@param type? string needs to be set if the same name exists for several types
 function ylib.recipe.add_result(recipe_name, result, amount, type)
   type = type or ylib.util.get_type(result)
   normal = {type = type, name = result, amount = amount[1]}
   expensive = {type = type, name = result, amount = amount[2]}
-  local _r = ylib.recipe.get.results(recipe_name)
+  local _r = ylib.recipe.get_results(recipe_name)
 
   if data.raw.recipe[recipe_name] then
     if data.raw.recipe[recipe_name].result and not data.raw.recipe[recipe_name].results then
@@ -199,27 +199,27 @@ end
 
 ---Returns a recipes ingredients by difficulty (if available) or nil
 ---@param recipe_name string
----@return table|nil ``{ingredients={}, normal={}, expensive={}}``
+---@return table|nil ``{ingredients={}, normal={}, expensive={}}`` - difficulty keys only if recipe has it
 function ylib.recipe.get_ingredients(recipe_name)
   if type(recipe_name) == "string" and data.raw.recipe[recipe_name] then
     local data_recipe = data.raw.recipe[recipe_name]
     local ingredients = {}
 
-    if data.raw.recipe.ingredients and data.raw.recipe.ingredients then
+    if data_recipe.ingredients then
       ingredients.ingredients = {}
-      for i, ingredient in ipairs(data.raw.recipe.ingredients) do
+      for i, ingredient in ipairs(data_recipe.ingredients) do
         ingredients.ingredients[i] = ylib.util.add_pairs(ingredient)
       end
     end
-    if data.raw.recipe.normal and data.raw.recipe.normal.ingredients then
+    if data_recipe.normal and data_recipe.normal.ingredients then
       ingredients.normal = {}
-      for i, ingredient in ipairs(data.raw.recipe.normal.ingredients) do
+      for i, ingredient in ipairs(data_recipe.normal.ingredients) do
         ingredients.normal[i] = ylib.util.add_pairs(ingredient)
       end
     end
-    if data.raw.recipe.expensive and data.raw.recipe.expensive.ingredients then
+    if data_recipe.expensive and data_recipe.expensive.ingredients then
       ingredients.expensive = {}
-      for i, ingredient in ipairs(data.raw.recipe.expensive.ingredients) do
+      for i, ingredient in ipairs(data_recipe.expensive.ingredients) do
         ingredients.expensive[i] = ylib.util.add_pairs(ingredient)
       end
     end
@@ -289,31 +289,31 @@ function ylib.recipe.get_results(recipe_name)
   if data.raw.recipe[recipe_name] then
     local data_recipe = data.raw.recipe[recipe_name]
 
-    if ylib.util.check_table(data.raw.recipe.results) then
-      for i, result in pairs(data.raw.recipe.results) do
+    if ylib.util.check_table(data_recipe.results) then
+      for i, result in pairs(data_recipe.results) do
         _return.results[i] = ylib.util.add_pairs( result )
       end
-    elseif data.raw.recipe.result then
-      _return.results[1] = ylib.util.add_pairs( {data.raw.recipe.result, data.raw.recipe.result_count} )
+    elseif data_recipe.result then
+      _return.results[1] = ylib.util.add_pairs( {data_recipe.result, data_recipe.result_count} )
     end
 
-    if data.raw.recipe.normal then
-      if ylib.util.check_table(data.raw.recipe.normal.results) then
-        for i, result in pairs(data.raw.recipe.normal.results) do
+    if data_recipe.normal then
+      if ylib.util.check_table(data_recipe.normal.results) then
+        for i, result in pairs(data_recipe.normal.results) do
           _return.normal[i] = ylib.util.add_pairs( result )
         end
-      elseif data.raw.recipe.normal.result then
-        _return.normal[1] = ylib.util.add_pairs( {data.raw.recipe.normal.result, data.raw.recipe.normal.result_count} )
+      elseif data_recipe.normal.result then
+        _return.normal[1] = ylib.util.add_pairs( {data_recipe.normal.result, data_recipe.normal.result_count} )
       end
     end
 
-    if data.raw.recipe.expensive then
-      if ylib.util.check_table(data.raw.recipe.expensive.results) then
-        for i, result in pairs(data.raw.recipe.expensive.results) do
+    if data_recipe.expensive then
+      if ylib.util.check_table(data_recipe.expensive.results) then
+        for i, result in pairs(data_recipe.expensive.results) do
           _return.expensive[i] = ylib.util.add_pairs( result )
         end
-      elseif data.raw.recipe.expensive.result then
-        _return.expensive[1] = ylib.util.add_pairs( {data.raw.recipe.expensive.result, data.raw.recipe.expensive.result_count} )
+      elseif data_recipe.expensive.result then
+        _return.expensive[1] = ylib.util.add_pairs( {data_recipe.expensive.result, data_recipe.expensive.result_count} )
       end
     end
 
@@ -322,9 +322,9 @@ function ylib.recipe.get_results(recipe_name)
   end
   return _return
 end
--- log(serpent.block( get_recipe_results( "tank" ) ))
--- log(serpent.block( get_recipe_results( "iron-plate" ) ))
--- error("get_recipe_results()")
+-- log(serpent.block( get_results( "tank" ) ))
+-- log(serpent.block( get_results( "iron-plate" ) ))
+-- error("get_results()")
 
 
 ---Returns all recipes which have the set result
