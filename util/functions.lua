@@ -44,7 +44,7 @@ end
 ---@param value string
 ---@param list table
 ---@return boolean
-function ylib.util.is_in_list (value, list)
+function ylib.util.is_in_list(value, list)
   for _, v in pairs (list) do
     if value == v then return true end
   end
