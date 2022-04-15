@@ -53,14 +53,11 @@ end
 
 
 ---Returns a table containing all minable recources(*basic-solid only!*); removes the ones specified in the **blacklist**
----@param filter? boolean
+---@param blacklist? table
 ---@return table
-function get_minable_resouces(filter)
-  local blacklist = { --//*FIXME blacklist must be outside of function
-    ores = {"coal"},
-    recipes = {"concrete"}
-  }
-  filter = filter or true
+function ylib.util.get_minable_resouces(blacklist)
+
+  blacklist = blacklist or {}
   local minable_resources = {}
 
   for key, value in pairs(data.raw.resource) do
@@ -76,8 +73,8 @@ function get_minable_resouces(filter)
       end
     end
   end
-  if filter then
-    for _, name in ipairs(blacklist.ores) do
+  if ylib.util.check_table(blacklist) then
+    for _, name in ipairs(blacklist) do
       for key, value in pairs(minable_resources) do
         if name == key then -- find isnt strict enough
           minable_resources[key] = nil
@@ -92,17 +89,17 @@ function get_minable_resouces(filter)
     return minable_resources
   end
 end
--- log(serpent.block(get_minable_resouces()))
+-- log(serpent.block(ylib.util.get_minable_resouces()))
 -- error("get_all_minable_resouces()")
 
 
 ---Returns wether or not a given resource is minable (is an ore)
 ---@param name string ore name
 ---@param resources? table get_minable_resources()
-function is_ore(name, resources)
-  resources = resources or get_minable_resouces(true)
+function ylib.util.is_ore(name, resources)
+  resources = resources or ylib.util.get_minable_resouces(true)
 
-  for key, table in pairs(resources) do
+  for _, table in pairs(resources) do
     for _, result in ipairs(table.results) do -- maybe modded resources have more than 1 result
       if result.name == name then return true end
     end

@@ -225,7 +225,7 @@ function ylib.recipe.get_ingredients(recipe_name)
     end
     return ingredients
   else
-    log(" Recipe not found: "..tostring(recipe_name))
+    log("get_ingredients(): Recipe not found: "..tostring(recipe_name))
   end
   return nil
 end
@@ -327,7 +327,7 @@ end
 -- error("get_results()")
 
 
----Returns all recipes which have the set result
+---Returns all recipes which have the set result --?-//IDEA switch filter for main_product?
 ---@param result_name string
 ---@param type? string needs to be set if the same name exists for several types
 ---@return table ``{results={}, normal={}, expensive={}}``
@@ -337,19 +337,27 @@ function ylib.recipe.get_byresult(result_name, type)
 
   if data.raw[type][result_name] then
 
-    for recipe_name, _ in pairs(data.raw.recipe) do
+    for recipe_name, recipe_data in pairs(data.raw.recipe) do
       local recipe_results = ylib.recipe.get_results(recipe_name)
+      main_product = recipe_data.main_product or result_name
 
       for _, results in ipairs(recipe_results.results) do
-        if results.name and results.name == result_name then table.insert(recipes, recipe_name) end
+        if results.name
+        and results.name == result_name
+        and results.name == main_product then table.insert(recipes, recipe_name) end
       end
 
       for _, results in ipairs(recipe_results.normal) do
-        if results.name and results.name == result_name then table.insert(recipes, recipe_name) end
+        if results.name
+        and results.name == result_name
+        and results.name == main_product  then table.insert(recipes, recipe_name) end
       end
 
       for _, results in ipairs(recipe_results.expensive) do
-        if results.name and results.name == result_name and not recipes.name == result_name then table.insert(recipes, recipe_name) end
+        if results.name
+        and results.name == result_name
+        and results.name == main_product
+        and not recipes.name == result_name then table.insert(recipes, recipe_name) end
       end
 
     end
@@ -358,10 +366,10 @@ function ylib.recipe.get_byresult(result_name, type)
   end
   return recipes
 end
--- log(serpent.block(ylib.recipe.get_byresults("uranium-235")))
--- log(serpent.block(ylib.recipe.get_byresults("tank")))
--- log(serpent.block(ylib.recipe.get_byresults("lubricant")))
--- error("ylib.recipe.get_byresults()")
+-- log(serpent.block(ylib.recipe.get_byresult("uranium-235")))
+-- log(serpent.block(ylib.recipe.get_byresult("tank")))
+-- log(serpent.block(ylib.recipe.get_byresult("lubricant")))
+-- error("ylib.recipe.get_byresult()")
 
 
 ---Returns energy_required as a table for normal and expensive
