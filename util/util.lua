@@ -18,6 +18,25 @@ function ylib.util.add_pairs(t)
   return t
 end
 
+
+--- Merges t_2's contents into t_1.
+---@param t_1 table
+---@param t_2 table
+function ylib.util.table_merge(t_1, t_2)
+  for index, value in pairs(t_2) do
+    if type(value) == "table" then
+      if type(t_1[index]) == "table" then
+        ylib.util.table_merge(t_1[index], t_2[index])
+      else
+        t_1[index] = util.copy(t_2[index])
+      end
+    else
+      t_1[index] = value
+    end
+  end
+end
+
+
 ---Returns _true_ if table contains anything
 ---@return boolean
 function ylib.util.check_table(table)

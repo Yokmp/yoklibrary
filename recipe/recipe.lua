@@ -12,7 +12,7 @@ function ylib.recipe.set_enabled(recipe_name, enabled)
     data.raw.recipe[recipe_name].expensive.enabled = enabled[2]
     if loglevel then log(recipe_name.." enabled: ".. tostring(enabled[1]) ..", ".. tostring(enabled[2])) end
   else
-    log("Unknown recipe: "..tostring(recipe_name))
+    warning("Unknown recipe: "..tostring(recipe_name))
   end
 end
 -- ylib.recipe.set_enabled("tank", {true,false})
@@ -27,7 +27,7 @@ function ylib.recipe.set_energy(recipe_name, energy)
     data.raw.recipe[recipe_name].normal.energy_required = energy[1]
     data.raw.recipe[recipe_name].expensive.energy_required = energy[2]
   else
-    log("Unknown recipe: "..tostring(recipe_name))
+    warning("Unknown recipe: "..tostring(recipe_name))
   end
 end
 -- ylib.recipe.set_energy("tank", {1,1})
@@ -53,10 +53,10 @@ function ylib.recipe.add_ingredient(recipe_name, ingredient, amount)
         table.insert(data.raw.recipe[recipe_name].expensive.ingredients, {name = ingredient, amount = amount[2]})
       end
     else
-      log("Wrong type: "..type(ingredient))
+      warning("Wrong type: "..type(ingredient))
     end
   else
-    log("Recipe "..tostring(recipe_name).." does not exist!")
+    warning("Unknown recipe: "..tostring(recipe_name))
   end
 end
 -- ylib.recipe.add_ingredient("tank", "TEST", {1,2})
@@ -123,10 +123,10 @@ function ylib.recipe.set_ingredients(recipe_name, ingredients)
         data.raw.recipe[recipe_name].expensive.ingredients = ingredients
       end
     else
-      log("Wrong type: "..type(ingredients))
+      warning("Wrong type: "..type(ingredients))
     end
   else
-    log("Recipe "..tostring(recipe_name).." does not exist!")
+    warning("Unknown recipe: "..tostring(recipe_name))
   end
 end
 
@@ -157,10 +157,10 @@ function ylib.recipe.remove_ingredient(recipe_name, ingredient_name)
       end
 
     else
-      log("string expected, got "..type(ingredient_name))
+      warning("string expected, got "..type(ingredient_name))
     end
   else
-    log("Recipe "..tostring(recipe_name).." does not exist!")
+    warning("Unknown recipe: "..tostring(recipe_name))
   end
 end
 -- ylib.recipe.remove_ingredient("tank", "engine-unit")
@@ -185,7 +185,7 @@ function ylib.recipe.replace_ingredient(recipe_name, ingredient_remove, ingredie
     ylib.recipe.add_ingredient(recipe_name, ingredient_add, amount)
     info("Replaced "..ingredient_remove.." with "..ingredient_add.." in "..recipe_name)
   else
-    log("Recipe "..tostring(recipe_name).." does not exist!")
+    warning("Unknown recipe: "..tostring(recipe_name))
   end
 end
 
@@ -225,7 +225,7 @@ function ylib.recipe.get_ingredients(recipe_name)
     end
     return ingredients
   else
-    log("get_ingredients(): Recipe not found: "..tostring(recipe_name))
+    warning("get_ingredients(): Recipe not found: "..tostring(recipe_name))
   end
   return nil
 end
@@ -270,7 +270,7 @@ function ylib.recipe.get_byingredient(item_name, item_type)
     end
   return recipes
   else
-    log(" Item not found: "..tostring(item_name))
+    warning(" Item not found: "..tostring(item_name))
   end
 end
 -- log(serpent.block(get_recipes_byingredient("iron-ore")))
@@ -318,7 +318,7 @@ function ylib.recipe.get_results(recipe_name)
     end
 
   else
-    log(" Recipe not found: "..tostring(recipe_name))
+    warning(" Recipe not found: "..tostring(recipe_name))
   end
   return _return
 end
@@ -362,7 +362,7 @@ function ylib.recipe.get_byresult(result_name, type)
 
     end
   else
-    log(tostring(type).."."..tostring(result_name).." not found")
+    warning(tostring(type).."."..tostring(result_name).." not found")
   end
   return recipes
 end
@@ -389,6 +389,8 @@ function ylib.recipe.get_energy_required(recipe_name)
     if data.raw.recipe.expensive then
       time[2] = data.raw.recipe.expensive.energy_required or 0.5
     end
+  else
+    warning("Unknown recipe: "..tostring(recipe_name))
   end
   return time
 end
@@ -438,7 +440,7 @@ function ylib.recipe.get_amount_in(recipe_name, ingredient_name)
     -- amount[2] = amount[2] > 0 and amount[2] or (amount[1] > 0 and amount[1] or 1)
     return amount
   end
-  log("Unknown recipe: "..recipe_name)
+  warning("Unknown recipe: "..recipe_name)
   return nil
 end
 -- log(serpent.block( get_recipe_amount_in( "express-splitter", "advanced-circuit" ) )) --10
@@ -476,7 +478,7 @@ function ylib.recipe.get_amount_out(recipe_name, result_name)
       end
     return amount
   else
-    log("Unknown recipe: "..recipe_name)
+    warning("Unknown recipe: "..recipe_name)
   end
   return nil
 end
@@ -486,3 +488,33 @@ end
 -- log(serpent.block( get_recipe_amount_out( "uranium-processing", "uranium-238" ) ))
 -- error("get_recipe_amount_out()")
 
+
+---Returns the main_product
+---@param recipe_name string
+---@return table|nil {normal, expensive}
+function ylib.recipe.get_main_product(recipe_name)
+  if data.raw.recipe[recipe_name] then
+    local recipe_data = data.raw.recipe[recipe_name]
+    local _r = {}
+
+      if recipe_data.main_product then
+        _r = {recipe_data.main_product, recipe_data.main_product}
+      end
+      if recipe_data.normal and recipe_data.normal.main_product then
+        _r = {recipe_data.normal.main_product, recipe_data.normal.main_product}
+      end
+      if recipe_data.expensive and recipe_data.expensive.main_product then
+        _r[1] = _r[1] and recipe_data.expensive.main_product or _r[1]
+        _r[2] = recipe_data.expensive.main_product
+      end
+    return _r
+  else
+    warning("Unknown recipe: "..recipe_name)
+  end
+  return nil
+end
+-- log(serpent.block( get_main_product( "tank" ) ))
+-- log(serpent.block( get_main_product( "iron-plate" ) ))
+-- log(serpent.block( get_main_product( "explosives" ) ))
+-- log(serpent.block( get_main_product( "uranium-processing", "uranium-238" ) ))
+-- error("get_main_product()")
