@@ -72,7 +72,7 @@ end
 ---@param amount table {normal, expensive}
 ---@param type? string needs to be set if the same name exists for several types
 function ylib.recipe.add_result(recipe_name, result, amount, type)
-  type = type or ylib.util.get_type(result)
+  type = type or ylib.util.get_item_type(result)
   normal = {type = type, name = result, amount = amount[1]}
   expensive = {type = type, name = result, amount = amount[2]}
   local _r = ylib.recipe.get_results(recipe_name)
@@ -239,7 +239,7 @@ end
 ---@param item_type? string needs to be set if the same name exists for several types
 ---@return table table List of recipe names
 function ylib.recipe.get_byingredient(item_name, item_type)
-  item_type = item_type or ylib.util.get_type(item_name)
+  item_type = item_type or ylib.util.get_item_type(item_name)
   if data.raw[item_type][item_name] then
     local recipes = {}
 
@@ -332,7 +332,7 @@ end
 ---@param type? string needs to be set if the same name exists for several types
 ---@return table ``{results={}, normal={}, expensive={}}``
 function ylib.recipe.get_byresult(result_name, type)
-  type = type or ylib.util.get_type(result_name)
+  type = type or ylib.util.get_item_type(result_name)
   local recipes = {}
 
   if data.raw[type][result_name] then

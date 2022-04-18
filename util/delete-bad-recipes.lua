@@ -24,7 +24,7 @@ end
 function easy_results_iterator (recipe_handler, recipe_name)
 	local must_be_deleted = false
 	-- data.raw.recipe["stone-brick"].result = "stone-brick"
-	if not (ylib.util.get_type (recipe_handler.result)) then
+	if not (ylib.util.get_item_type (recipe_handler.result)) then
 		must_be_deleted  = true
 		log ('  /' .. 'Found bad item! - ' .. recipe_handler.result)
 	end

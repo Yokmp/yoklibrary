@@ -1,42 +1,42 @@
 
----Returns the type
+---Returns the (item) type of ''name'''
 ---@param name string
 ---@return string
-function ylib.util.get_type(name)
+function ylib.util.get_item_type(name)
   local type_name = nil
   if type(name) == "string" then
     local type_list = {
-      "ammo", "armor", "capsule", "fluid", "gun", "item", "mining-tool", "repair-tool", "module", "tool",
+      "ammo", "armor", "capsule", "recipe", "item", "fluid", "gun", "mining-tool", "repair-tool", "module", "tool",
       "item-with-entity-data", "rail-planner", "item-with-label", "item-with-inventory", "blueprint-book",
       "item-with-tags", "selection-tool", "blueprint", "copy-paste-tool", "deconstruction-item", "upgrade-item",
-      "spidertron-remote"
+      "spidertron-remote", "technology"
     }
     for _, _t in pairs(type_list) do
       if data.raw[_t][name] then type_name = _t end
     end
   else
-    log("Parameter Name is not a string")
+    log("String expected, got "..type(name))
   end
   return type_name
 end
 
 
----Hopefully returns the entity type
----@param entity_name string
----@return string|nil
-function ylib.util.get_entity_type(entity_name)
-  for entity_type, _ in pairs(data.raw) do
-    for entity, _ in pairs(data.raw[entity_type]) do
-      if entity == entity_name --TODO check positives instead?
-      and entity_type ~= "item"
-      and entity_type ~= "fluid"
-      and entity_type ~= "recipe"
-      then
-          return entity_type
-      end
+---Returns the first match of name when it is a producing/consuming machine
+---@param name string
+---@return string
+function ylib.util.get_machine_type(name)
+  local type_name = nil
+  if type(name) == "string" then
+    local type_list = {
+      "assembling-machine", "furnace", "generator", "boiler", "offshore-pump", "reactor", "rocket-silo", "burner-generator",
+    }
+    for _, _t in pairs(type_list) do
+      if data.raw[_t][name] then return _t end
     end
+  else
+    log("String expected, got "..type(name))
   end
-  return nil
+  return type_name
 end
 
 

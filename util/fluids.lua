@@ -23,7 +23,7 @@ end
 ---@param entity_type? string must be set if the entity name exists in multiple types
 ---@return boolean
 function ylib.fluid.has_fluid_box(entity_name, entity_type)
-  entity_type = entity_type or ylib.util.get_entity_type(entity_name)
+  entity_type = entity_type or ylib.util.get_machine_type(entity_name)
   if data.raw[entity_type][entity_name] then
     return data.raw[entity_type][entity_name].fluid_boxes and true
   end
@@ -36,7 +36,7 @@ end
 ---@param entity_type? string must be set if the entity name exists in multiple types
 ---@return boolean
 function ylib.fluid.has_fluid_box_of_type(entity_name, production_type, entity_type)
-  entity_type = entity_type or ylib.util.get_entity_type(entity_name)
+  entity_type = entity_type or ylib.util.get_machine_type(entity_name)
   if ylib.fluid.has_fluid_box(entity_name, entity_type) then
     for _, fluid_box in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
       if fluid_box.production_type == production_type then
@@ -53,7 +53,7 @@ end
 ---@param entity_type? string
 ---@return integer
 function ylib.fluid.get_fluid_box_amount(entity_name, entity_type)
-  entity_type = entity_type or ylib.util.get_entity_type(entity_name)
+  entity_type = entity_type or ylib.util.get_machine_type(entity_name)
   if ylib.fluid.has_fluid_box(entity_name, entity_type) then
     return #data.raw[entity_type][entity_name].fluid_boxes
   end
@@ -67,7 +67,7 @@ end
 ---@param entity_type? string
 ---@return integer
 function ylib.fluid.get_fluid_box_amount_of_type(entity_name, production_type, entity_type)
-  entity_type = entity_type or ylib.util.get_entity_type(entity_name)
+  entity_type = entity_type or ylib.util.get_machine_type(entity_name)
   local amount = 0
   if ylib.fluid.has_fluid_box_of_type(entity_name, production_type, entity_type) then
     for _, fluid_box in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
@@ -84,7 +84,7 @@ end
 ---@param entity_type? string
 ---@return table ``{none = i, input = i, ["input-output"] = i, output = i,}``
 function ylib.fluid.get_fluid_box_types(entity_name, entity_type)
-  entity_type = entity_type or ylib.util.get_entity_type(entity_name)
+  entity_type = entity_type or ylib.util.get_machine_type(entity_name)
   local amount = {none = 0, input = 0, ["input-output"] = 0, output = 0,}
   if ylib.fluid.has_fluid_box(entity_name, entity_type) then
     for _, value in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do

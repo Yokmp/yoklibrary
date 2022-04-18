@@ -19,21 +19,22 @@ function ylib.util.add_pairs(t)
 end
 
 
---- Merges t_2's contents into t_1.
----@param t_1 table
----@param t_2 table
-function ylib.util.table_merge(t_1, t_2)
-  for index, value in pairs(t_2) do
+---Recursively merges _t2 into _t1.
+---@param _t1 table
+---@param _t2 table
+function ylib.util.table_merge(_t1, _t2)
+  for index, value in pairs(_t2) do
     if type(value) == "table" then
-      if type(t_1[index]) == "table" then
-        ylib.util.table_merge(t_1[index], t_2[index])
+      if type(_t1[index]) == "table" then
+        ylib.util.table_merge(_t1[index], _t2[index])
       else
-        t_1[index] = util.copy(t_2[index])
+        _t1[index] = util.copy(_t2[index])
       end
     else
-      t_1[index] = value
+      _t1[index] = value
     end
   end
+  return _t1
 end
 
 

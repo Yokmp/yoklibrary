@@ -71,124 +71,79 @@ ylib.icon.icons:add("ylib", "graphics/icons", "missing")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing-tech", 128, 0, 1)
 
 
--- ---wrapper
--- local function get_icon(icon_name)
---   return ylib.icon.icons:get("ylib", icon_name)
+-- --create a map with all types containing icon data
+-- local types_with_icon = {}
+-- for k, v in pairs(data.raw) do
+--   for _, value in pairs(v) do
+--     if value.icon or value.icons then
+--       types_with_icon[k] = true
+--     end
+--   end
 -- end
 
 
-function ylib.icon.new_icon()
-  return ylib.icon.icons:get("ylib", "missing")
-end
-
-
----Returns the icon data variant
----@param type_table string
----@param name string
+---Returns the icon data variant. Use the wrapper functions if possible.
+---@param name string ``data.raw[type_table][name]``
+---@param type_table? string if not set, uses the first matching type through ``ylib.util.get_type(name)``
+---@param main_product? string ``false`` - use main_product's icon if the recipe has none
+---@param icons_index? string ``1`` - the index of ``name{ icons{...}}`` to use
 ---@return table ``{icon: boolean, icons: boolean}``
-function ylib.icon.has_icon(type_table, name) -- I don't know why someone should ever use this
+function ylib.icon.get_icon(name, type_table, main_product, icons_index)
+  type_table = type_table or ylib.util.get_item_type(name)
+  icons_index = icons_index or 1
+  main_product = main_product or false
   local _t = data.raw[type_table]
-  local _r = {false, false}
+  local icon = ylib.icon.icons:get("ylib", "missing")
   if _t then
     if _t[name] then
-      if _t[name].icon then
-        _r[1] = true
+      if _t[name].icon then -- icons on items are mandatory
+        icon.icon = _t[name].icon
+        icon.icon_size = _t[name].icon_size
+        icon.icon_mipmaps = _t[name].icon_mipmaps or 0
+        icon.scale = (32/_t[name].icon_size)
       elseif _t[name].icons then
-        _r[2] = true
+        ylib.util.table_merge(icon, _t[name].icons[icons_index])
+      elseif main_product and type_table == "recipe" then --?- search recipes too
+        local _mp = ylib.recipe.get_main_product(name)[1] or name
+        local _type = ylib.util.get_item_type(_mp)
+        _mp = ylib.icon.get_icon(_type, _mp)
+        ylib.util.table_merge(icon, _mp)
       end
-    else info("Not found: data.raw."..type_table.."."..name) end
-  else info("Not found: data.raw."..type_table) end
-  return _r
+    else info("Not found: data.raw."..type_table.."."..tostring(name)) end
+  else info("Not found: data.raw."..tostring(type_table)) end
+  return icon
 end
-
-
---//TODO Wrapper function instead of 3 similar functions ...
 
 
 ---Returns the icon data of a recipe
 ---@param recipe_name string
 ---@param icons_index? integer
----@param item_icons? boolean get the item icon as a fallback
+---@param main_product? boolean ``true`` - use the main_product if the recipe has no icon
 ---@return icon
-function ylib.icon.get_recipe_icon(recipe_name, icons_index, item_icons)
+function ylib.icon.get_recipe_icon(recipe_name, icons_index, main_product)
   icons_index = icons_index or 1
-  item_icons = item_icons or false
-  local _t = data.raw.recipe[recipe_name]
-  local icon = ylib.icon.icons:get("ylib", "missing")
-  if _t then
-    if _t.icon then
-      icon.icon         = _t.icon
-      icon.icon_size    = _t.icon_size
-      icon.icon_mipmaps = _t.icon_mipmaps or 0
-      icon.scale        = (32/_t.icon_size)
-    elseif _t.icons then
-      ylib.util.table_merge(icon, _t.icons[icons_index])
-    elseif item_icons then
-      local _mp = {recipe_name, recipe_name}
-      if ylib.recipe.get_main_product(recipe_name) then
-        _mp = ylib.recipe.get_main_product(recipe_name)
-      end
-      recipe_name = _mp[1]
-      _t = ylib.icon.get_item_icon(_mp[1])
-      ylib.util.table_merge(icon, _t.icons)
-      icon.tint = _t.icons[icons_index].tint
-    end
-      info("Using icon: "..recipe_name.." - "..icon.icon)
-  else
-    info("Item "..recipe_name.." not found, using missing.png icon.")
-  end
-  return icon
+  main_product = main_product or true
+  return ylib.icon.get_icon("recipe", recipe_name, main_product, icons_index)
 end
 
 
 ---Returns the icon data of an item
 ---@param item_name string
----@param icons_index? integer
+---@param icons_index? integer which index in icons to return
 ---@return icon
 function ylib.icon.get_item_icon(item_name, icons_index)
   icons_index = icons_index or 1
-  local _t = data.raw.item[item_name]
-  local icon = ylib.icon.icons:get("ylib", "missing")
-  if _t then
-    if _t.icon then -- icons on items are mandatory --//?search recipes too?
-      icon.icon = _t.icon
-      icon.icon_size = _t.icon_size
-      icon.icon_mipmaps = _t.icon_mipmaps or 0
-      icon.scale = (32/_t.icon_size)
-    elseif _t.icons then
-      ylib.util.table_merge(icon, _t.icons[icons_index])
-      icon.tint = _t.icons[icons_index].tint
-    end
-      info("Using icon: "..item_name.." - "..icon.icon)
-  else
-    info("Item "..item_name.." not found, using missing.png icon.")
-  end
-  return icon
+  return ylib.icon.get_icon("item", item_name, false, icons_index)
 end
 
 
 ---Returns the icon data of a fluid.
 ---@param fluid_name string
----@param icons_index? integer
+---@param icons_index? integer which index in icons to return
 ---@return icon
 function ylib.icon.get_fluid_icon(fluid_name, icons_index)
   icons_index = icons_index or 1
-  local _t = data.raw.fluid[fluid_name]
-  local icon = ylib.icon.icons:get("ylib", "missing")
-  if _t then
-    if _t.icon then
-      icon.icon         = _t.icon
-      icon.icon_size    = _t.icon_size
-      icon.icon_mipmaps = _t.icon_mipmaps or 0
-      icon.scale        = (32/_t.icon_size)
-    elseif _t.icons then
-      ylib.util.table_merge(icon, _t.icons[icons_index])
-      icon.tint = _t.icons[icons_index].tint
-    end
-  else
-    info("Fluid "..fluid_name.." not found, using missing.png icon.")
-  end
-  return icon
+  return ylib.icon.get_icon("fluid", fluid_name, false, icons_index)
 end
 
 
@@ -196,32 +151,31 @@ end
 
 --//TODO rework icon layering at some point
 
----Returns a table containing icon definitions.
----If ``icon_top`` is a string: ``icon_top = get_icon_from_item(icon_top) or get_fluid_icon(icon_top) or icons:get(icon_top)``
----@param icon_top icon|string use ylib.icon.icons:get() if possible, can work on strings
----@param icon_bottom? icon defaults to molten_drop (based on icon_top.icon_size)
----@param shift? table default ``{{0,0}, {0,5}}``
-function ylib.icon.get_composed_icon(icon_top, icon_bottom, scale, shift) --//*FIXME drop scaling, should consider making custom icons per metal
-  scale = scale or 0.5
-  shift = shift or 0
+-- ---Returns a table of 2 icons layered on top
+-- ---@param icon_top icon use ylib.icon.icons:get() if possible, can work on strings
+-- ---@param icon_bottom icon defaults to molten_drop (based on icon_top.icon_size)
+-- ---@param size integer preferred size of the icons (will calc a scale value based on this)
+-- ---@param shift? table ``{{0,0}, {0,0}}`` - Example: icon_top: ``{2,5}`` icon_bottom: ``{-2,-5}``
+-- function ylib.icon.get_composed_icon(icon_top, icon_bottom, size, shift)
+--   shift = shift or {{0,0}, {0,0}}
 
-  if type(icon_top) == "string" then
-    icon_top = ylib.icon.get_icon_from_item(icon_top) or ylib.icon.get_fluid_icon(icon_top) or ylib.icon.icons:get(icon_top)
-  end
+--   if type(icon_top) == "string" then
+--     icon_top = ylib.icon.get_recipe_icon(icon_top) or ylib.icon.get_fluid_icon(icon_top) or ylib.icon.icons:get(icon_top)
+--   end
 
-  local function determine_icon_by_type()
-    if icon_top.icon_size <= 96 then return ylib.icon.icons:get("molten_drop")
-    else return ylib.icon.icons:get("molten_drop_tech") end
-  end
+--   local function determine_icon_by_type()
+--     if icon_top.icon_size <= 96 then return ylib.icon.icons:get("molten_drop")
+--     else return ylib.icon.icons:get("molten_drop_tech") end
+--   end
 
-  icon_top.scale = icon_top.scale and icon_top.scale-0.2 or 0.6
-  icon_top.scale = icon_top.scale*scale
-  icon_top.shift = {0,0-shift}
-  icon_bottom = icon_bottom or determine_icon_by_type()
-  -- icon_bottom.scale = (icon_bottom.icon_size/icon_top.icon_size)*(scale-0.2)
-  icon_bottom.scale = (icon_bottom.icon_size/icon_top.icon_size)*(scale*0.6)
-  icon_bottom.shift = {0,0+shift}
+--   icon_top.scale = icon_top.scale and icon_top.scale-0.2 or 0.6
+--   icon_top.scale = icon_top.scale*scale
+--   icon_top.shift = {0,0-shift}
+--   icon_bottom = icon_bottom or determine_icon_by_type()
+--   -- icon_bottom.scale = (icon_bottom.icon_size/icon_top.icon_size)*(scale-0.2)
+--   icon_bottom.scale = (icon_bottom.icon_size/icon_top.icon_size)*(scale*0.6)
+--   icon_bottom.shift = {0,0+shift}
 
-  return {icon_top, icon_bottom}
-end
+--   return {icon_top, icon_bottom}
+-- end
 
