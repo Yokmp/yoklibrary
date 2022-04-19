@@ -15,9 +15,9 @@
 ---@field b number
 ---@field a number
 
--- NOTE: The functions do NOT validate your data!
+-- NOTE: The methods do NOT validate your data!
 ylib.icon.icons = {
-  ---Returns an icon object, Use ``icons:get(name, ...)``
+  ---Returns an icon object, Use ``icons:get(...)``
   ---@param self table icons table
   ---@param mod_name string concatenates into ``"__"..mod_name.."__"``
   ---@param icon string
@@ -27,8 +27,8 @@ ylib.icon.icons = {
   ---@return icon - if the icon/key is ``nil`` the missing icon data is returned
   get = function (self, mod_name, icon, scale, shift, tint)
     local proto = {} ---@type icon
-    icon = self[mod_name][icon] and icon or "missing"
-    proto.icon          = self[mod_name][icon].path.."/"..self[mod_name][icon].icon..".png"
+    if not self[mod_name] and not self[mod_name][icon] then icon = "missing" end --!-//BUG when icon/table is nil
+    proto.icon          = self[mod_name][icon].path.."/"..icon..".png"
     proto.icon_size     = self[mod_name][icon].icon_size or 64
     proto.icon_mipmaps  = self[mod_name][icon].icon_mipmaps or 0
     proto.scale         = scale or self[mod_name][icon].scale or 32/proto.icon_size
@@ -38,7 +38,7 @@ ylib.icon.icons = {
   end,
 ---Adds or overwrites icon data
 ---@param self table
----@param mod_name string
+---@param mod_name string concatenates into ``"__"..mod_name.."__"`` as path but says unchanged as key
 ---@param icon_path string
 ---@param icon_name string
 ---@param size? integer
@@ -69,6 +69,12 @@ ylib.icon.icons:add("ylib", "graphics/icons", "electric-interface")
 ylib.icon.icons:add("ylib", "graphics/icons", "steam-interface")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing-tech", 128, 0, 1)
+
+
+ylib.icon.icons:add("Fluid_Mixer", "graphics/icons", "fluid-mixing", 64, 0, 0.5)
+ylib.icon.icons:get("Fluid_Mixer", "fluid_mixing")
+
+error("ICON TEST")
 
 
 -- --create a map with all types containing icon data
@@ -123,7 +129,7 @@ end
 function ylib.icon.get_recipe_icon(recipe_name, icons_index, main_product)
   icons_index = icons_index or 1
   main_product = main_product or true
-  return ylib.icon.get_icon("recipe", recipe_name, main_product, icons_index)
+  return ylib.icon.get_icon(recipe_name, "recipe", main_product, icons_index)
 end
 
 
@@ -133,7 +139,7 @@ end
 ---@return icon
 function ylib.icon.get_item_icon(item_name, icons_index)
   icons_index = icons_index or 1
-  return ylib.icon.get_icon("item", item_name, false, icons_index)
+  return ylib.icon.get_icon(item_name, "item", false, icons_index)
 end
 
 
@@ -143,9 +149,8 @@ end
 ---@return icon
 function ylib.icon.get_fluid_icon(fluid_name, icons_index)
   icons_index = icons_index or 1
-  return ylib.icon.get_icon("fluid", fluid_name, false, icons_index)
+  return ylib.icon.get_icon(fluid_name, "fluid", false, icons_index)
 end
-
 
 
 
