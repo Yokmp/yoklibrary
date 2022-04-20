@@ -15,30 +15,35 @@
 ---@field b number
 ---@field a number
 
--- NOTE: The methods do NOT validate your data!
+-- NOTE: The methods do NOT validate your data!; get() replaced metatable
 ylib.icon.icons = {
   ---Returns an icon object, Use ``icons:get(...)``
   ---@param self table icons table
   ---@param mod_name string concatenates into ``"__"..mod_name.."__"``
-  ---@param icon string
+  ---@param icon_name string
   ---@param scale? integer
   ---@param shift? vector
   ---@param tint? color
   ---@return icon - if the icon/key is ``nil`` the missing icon data is returned
-  get = function (self, mod_name, icon, scale, shift, tint)
+  get = function (self, mod_name, icon_name, scale, shift, tint)
     local proto = {} ---@type icon
-    if not self[mod_name] and not self[mod_name][icon] then icon = "missing" end --!-//BUG when icon/table is nil
-    proto.icon          = self[mod_name][icon].path.."/"..icon..".png"
-    proto.icon_size     = self[mod_name][icon].icon_size or 64
-    proto.icon_mipmaps  = self[mod_name][icon].icon_mipmaps or 0
-    proto.scale         = scale or self[mod_name][icon].scale or 32/proto.icon_size
-    proto.shift         = shift or self[mod_name][icon].shift or {0,0}
-    proto.tint          = tint or self[mod_name][icon].tint or { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
+    if self[mod_name] and self[mod_name][icon_name] then
+      proto.icon          = self[mod_name][icon_name].icon
+      proto.icon_size     = self[mod_name][icon_name].icon_size
+      proto.icon_mipmaps  = self[mod_name][icon_name].icon_mipmaps
+      proto.scale         = scale or self[mod_name][icon_name].scale
+      proto.shift         = shift or self[mod_name][icon_name].shift
+      proto.tint          = tint or self[mod_name][icon_name].tint
+    else
+      proto = self.ylib.missing
+    end
     return proto
   end,
 ---Adds or overwrites icon data
+---
+---concatenates ``"__"..mod_name.."__/"..icon_path.."/"..icon_name`` as field ``icon``
 ---@param self table
----@param mod_name string concatenates into ``"__"..mod_name.."__"`` as path but says unchanged as key
+---@param mod_name string
 ---@param icon_path string
 ---@param icon_name string
 ---@param size? integer
@@ -47,7 +52,7 @@ ylib.icon.icons = {
 ---@param shift? vector
 ---@param tint? color
   add = function (self, mod_name, icon_path, icon_name, size, mipmaps, scale, shift, tint)
-    local t_icon = {icon = icon_name, path = "__"..mod_name.."__/"..icon_path, icon_size = size or 64, icon_mipmaps = mipmaps or 4, scale = scale or 0.5,
+    local t_icon = {icon = "__"..mod_name.."__/"..icon_path.."/"..icon_name..".png", icon_size = size or 64, icon_mipmaps = mipmaps or 4, scale = scale or 0.5,
                     shift = shift or {0,0}, tint = tint or { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }}
     if self[mod_name] then
       self[mod_name][icon_name] = t_icon
@@ -69,12 +74,6 @@ ylib.icon.icons:add("ylib", "graphics/icons", "electric-interface")
 ylib.icon.icons:add("ylib", "graphics/icons", "steam-interface")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing-tech", 128, 0, 1)
-
-
-ylib.icon.icons:add("Fluid_Mixer", "graphics/icons", "fluid-mixing", 64, 0, 0.5)
-ylib.icon.icons:get("Fluid_Mixer", "fluid_mixing")
-
-error("ICON TEST")
 
 
 -- --create a map with all types containing icon data
