@@ -156,14 +156,14 @@ end
 ---Sets the parent of a technology which inherits all prerequisites and ingredients of the parent
 ---@param tech_name string
 ---@param parent_name string
----@param use_prerequisites boolean
-function technology_set_parent(tech_name, parent_name, use_prerequisites)
-  use_prerequisites = use_prerequisites or true
-  local prereq = technology_get_prerequisites(parent_name)
+---@param parent_as_prerequisite boolean use the parents prerquisites (false) or the parent as prerquisite(true)
+function technology_set_parent(tech_name, parent_name, parent_as_prerequisite)
+  parent_as_prerequisite = parent_as_prerequisite or true
+  local p_pre = technology_get_prerequisites(parent_name)
 
   if data.raw.technology[tech_name] and data.raw.technology[parent_name] then
-    if use_prerequisites then table.insert(prereq, parent_name) end
-    data.raw.technology[tech_name].prerequisites = prereq
+    if parent_as_prerequisite then table.insert(p_pre, parent_name) end
+    data.raw.technology[tech_name].prerequisites = p_pre
     data.raw.technology[tech_name].unit.ingredients = util.table.deepcopy(data.raw.technology[parent_name].unit.ingredients)
   else
     warning(tostring(tech_name).." or "..tostring(parent_name).." do not exist!")
