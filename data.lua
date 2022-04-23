@@ -3,6 +3,7 @@ ylib.recipe = ylib.recipe or {}
 ylib.fluid = ylib.fluid or {}
 ylib.util = ylib.util or {}
 ylib.icon = ylib.icon or {}
+ylib.technology = ylib.technology or {}
 
 loglevel = settings.startup["ylib-logging"].value
 require("util.logger")

@@ -5,61 +5,61 @@
 -- TECHNOLOGY --
 ----------------
 
----Creates a new technology, uses localised_name or nil.
----@param tech_name string
----@param icon_name string
----@param prerequisites table use technology_set_parent()
----@param ingredient table or use technology_add_ingedient()
----@param localized_name table ``Format: {"prefix", "name", "suffix"}``
----@param order? string Format ``order.."["..tech_name.."]"``
----@param count? number
----@param time? number
-function new_technology_ext(tech_name, icon_name, prerequisites, ingredient, localized_name, order, count, time)
-  localized_name = localized_name or nil
-  order = order or ""
+-- ---Creates a new technology, uses localised_name or nil.
+-- ---@param tech_name string
+-- ---@param icon_name string
+-- ---@param prerequisites table use technology_set_parent()
+-- ---@param ingredient table or use technology_add_ingedient()
+-- ---@param localized_name table ``Format: {"prefix", "name", "suffix"}``
+-- ---@param order? string Format ``order.."["..tech_name.."]"``
+-- ---@param count? number
+-- ---@param time? number
+-- function new_technology_ext(tech_name, icon_name, prerequisites, ingredient, localized_name, order, count, time)
+--   localized_name = localized_name or nil
+--   order = order or ""
 
-  local technology = {
-    type = "technology",
-    name = tech_name,
-    icons = technology_icon_compose(icon_name),
-    effects = {},
-    prerequisites = prerequisites,
-    unit =
-    {
-      count = count or 75,
-      ingredients = {ingredient},
-      time = time or 5
-    },
-    order = order.."["..tech_name.."]"
-  }
+--   local technology = {
+--     type = "technology",
+--     name = tech_name,
+--     icons = technology_icon_compose(icon_name),
+--     effects = {},
+--     prerequisites = prerequisites,
+--     unit =
+--     {
+--       count = count or 75,
+--       ingredients = {ingredient},
+--       time = time or 5
+--     },
+--     order = order.."["..tech_name.."]"
+--   }
 
-  if type(localized_name) == "table" then
-    technology.localised_name = {"",
-      {(localized_name.prefix or localized_name[1])}, " ",
-      {(localized_name.name   or localized_name[2])}, " ",
-      {(localized_name.suffix or localized_name[3])}
-    }
-  end
+--   if type(localized_name) == "table" then
+--     technology.localised_name = {"",
+--       {(localized_name.prefix or localized_name[1])}, " ",
+--       {(localized_name.name   or localized_name[2])}, " ",
+--       {(localized_name.suffix or localized_name[3])}
+--     }
+--   end
 
 
-  data:extend({ technology })
-end
+--   data:extend({ technology })
+-- end
 
----Wrapper for new_technology_ext(), also sets the parent technology
----@param tech_name string
----@param icon_name string
----@param parent_name string
----@param localized_name? string omittable if icon and locale names match
-function new_technology(tech_name, icon_name, parent_name, localized_name)
-  new_technology_ext(tech_name, icon_name, {}, {}, localized_name or icon_name)
-  technology_set_parent(tech_name, parent_name)
-end
+-- ---Wrapper for new_technology_ext(), also sets the parent technology
+-- ---@param tech_name string
+-- ---@param icon_name string
+-- ---@param parent_name string
+-- ---@param localized_name? string omittable if icon and locale names match
+-- function new_technology(tech_name, icon_name, parent_name, localized_name)
+--   new_technology_ext(tech_name, icon_name, {}, {}, localized_name or icon_name)
+--   technology_set_parent(tech_name, parent_name)
+-- end
 
 
 ---Adds a recipe as effect to a technology
 ---@param technology_name string
 ---@param recipe_name string
-function technology_add_effect(technology_name, recipe_name)
+function ylib.technology.add_effect(technology_name, recipe_name)
   if data.raw.technology[technology_name] and data.raw.technology[technology_name].effects then
     table.insert(data.raw.technology[technology_name].effects, { type = "unlock-recipe", recipe = recipe_name })
     if loglevel then log("added "..recipe_name.." to ".. technology_name) end
@@ -68,10 +68,11 @@ function technology_add_effect(technology_name, recipe_name)
   end
 end
 
+
 ---Removed a recipe from a technology
 ---@param technology_name string
 ---@param recipe_name string
-function technology_remove_effect(technology_name, recipe_name)
+function ylib.technology.remove_effect(technology_name, recipe_name)
   if data.raw.technology[technology_name] and data.raw.technology[technology_name].effects then
     for index, value in ipairs(data.raw.technology[technology_name].effects) do
       if value.recipe == recipe_name then
@@ -84,11 +85,12 @@ function technology_remove_effect(technology_name, recipe_name)
   end
 end
 
+
 ---Add an ingredient to a technology
 ---@param technology_name string
 ---@param ingredient table
 ---@param amount number
-function technology_add_ingredient(technology_name, ingredient, amount)
+function ylib.technology.add_ingredient(technology_name, ingredient, amount)
   if data.raw.technology[technology_name] then
     table.insert(data.raw.technology[technology_name].unit.ingredients, {ingredient, amount})
   else
@@ -96,10 +98,11 @@ function technology_add_ingredient(technology_name, ingredient, amount)
   end
 end
 
+
 ---Removes an ingredient
 ---@param technology_name string
 ---@param ingredient string
-function technology_remove_ingredient(technology_name, ingredient)
+function ylib.technology.remove_ingredient(technology_name, ingredient)
   if data.raw.technology[technology_name] then
     for index, value in ipairs(data.raw.technology[technology_name].unit.ingredients) do
       if value[1] == ingredient then
@@ -111,20 +114,22 @@ function technology_remove_ingredient(technology_name, ingredient)
   end
 end
 
+
 ---Replaces an ingredient by another
 ---@param technology_name string
 ---@param ingredient_old string
 ---@param ingredient_new string
 ---@param amount number
-function technology_replace_ingredient(technology_name, ingredient_old, ingredient_new, amount)
-  technology_remove_ingredient(technology_name, ingredient_old)
-  technology_add_ingredient(technology_name, ingredient_new, amount)
+function ylib.technology.replace_ingredient(technology_name, ingredient_old, ingredient_new, amount)
+  ylib.technology.remove_ingredient(technology_name, ingredient_old)
+  ylib.technology.add_ingredient(technology_name, ingredient_new, amount)
 end
+
 
 ---Returns which technologies enable a recipe.
 ---@param recipe_name string
 ---@return table
-function get_techs_enable_recipe(recipe_name)
+function ylib.technology.get_techs_enable_recipe(recipe_name)
   local _techs = {}
   for _, value in pairs(data.raw.technology) do
     if value.effects then
@@ -141,10 +146,11 @@ function get_techs_enable_recipe(recipe_name)
   return _techs
 end
 
+
 ---Returns the prerequisites of a technology
 ---@param tech_name string
 ---@return table
-function technology_get_prerequisites(tech_name)
+function ylib.technology.get_prerequisites(tech_name)
   if data.raw.technology[tech_name] then
     return util.table.deepcopy(data.raw.technology[tech_name].prerequisites)
   else
@@ -153,13 +159,14 @@ function technology_get_prerequisites(tech_name)
   return {}
 end
 
+
 ---Sets the parent of a technology which inherits all prerequisites and ingredients of the parent
 ---@param tech_name string
 ---@param parent_name string
 ---@param parent_as_prerequisite boolean use the parents prerquisites (false) or the parent as prerquisite(true)
-function technology_set_parent(tech_name, parent_name, parent_as_prerequisite)
+function ylib.technology.set_parent(tech_name, parent_name, parent_as_prerequisite)
   parent_as_prerequisite = parent_as_prerequisite or true
-  local p_pre = technology_get_prerequisites(parent_name)
+  local p_pre = ylib.technology.get_prerequisites(parent_name)
 
   if data.raw.technology[tech_name] and data.raw.technology[parent_name] then
     if parent_as_prerequisite then table.insert(p_pre, parent_name) end
@@ -171,32 +178,24 @@ function technology_set_parent(tech_name, parent_name, parent_as_prerequisite)
 end
 
 
---//TODO make similar to get_composed_icon
-
+--//TODO testing
 -- ---Returns icons for technology
--- ---@param icon_name string must be a valid item name
--- ---@param size? number
--- ---@param scale? number multiplier
+-- ---@param tech_name string icon name for technology
+-- ---@param item_name string used when tech has no icon
 -- ---@param shift? table
 -- ---@return table
--- function technology_icon_compose(icon_name, size, scale, shift)
---   local icon = ylib.icon.get_icon_from_item(icon_name)
---   size = size or 128
---   scale = scale or (icon.icon_size/size)
---   return {
---     {
---       icon = icon.icon,
---       icon_size = icon.icon_size,
---       icon_mipmaps = icon.icon_mipmaps or 0,
---       scale = 1,
---       shift = shift or {0,5}
---     },
---     -- { --TODO default to missing?
---     --   icon = "__ylib__/graphics/technology/molten-drop.png",
---     --   icon_size = size,
---     --   scale = 1*scale,
---     --   shift = {0,0}
---     -- },
---   }
+-- function ylib.technology.icon_compose(tech_name, item_name, shift)
+
+--   if ylib.icon.icons["Molten_Metals"][tech_name] then
+--     return {ylib.icon.icons:get("Molten_Metals", tech_name)}
+--   end
+--   local icon = ylib.icon.get_item_icon(item_name)
+--   local drop = ylib.icon.icons:get("Molten_Metals", "molten-drop-tech")
+--   log(serpent.block(icon))
+
+--   icon.scale = 1
+--   icon.shift = shift or {0,5}
+--   drop.scale = icon.icon_size/drop.icon_size
+--   return { icon, drop }
 -- end
--- log(serpent.block(technology_icon_compose("aluminum-6061")))
+-- log(serpent.block(ylib.technology.icon_compose("aluminum-6061")))
