@@ -41,7 +41,7 @@ ylib.icon.icons = {
   end,
 ---Adds or overwrites icon data
 ---
----concatenates ``"__"..mod_name.."__/"..icon_path.."/"..icon_name`` as field ``icon``
+---concatenates ``"__"..mod_name.."__/"..icon_path.."/"..icon_name..".png"`` as field ``icon``
 ---@param self table
 ---@param mod_name string
 ---@param icon_path string
@@ -63,17 +63,19 @@ ylib.icon.icons = {
   ---Creates an alias for an icon (this is not a copy)
   ---@param self table
   ---@param mod_name string this mods name
+  ---@param mod_icon string the key for the new link
   ---@param parent_name string the name of the mod to link to
   ---@param parent_icon string icon name to link
-  alias = function (self, mod_name, parent_name, parent_icon)
-    self[mod_name] = self[mod_name] or {}
-    self[mod_name][parent_icon] = self[parent_name][parent_icon]
+  alias = function (self, mod_name, mod_icon, parent_name, parent_icon)
+    self[mod_name] = self[mod_name] or {[mod_icon] = {}}
+    self[mod_name][mod_icon] = self[parent_name][parent_icon]
   end,
 }
 ylib.icon.icons:add("ylib", "graphics/icons", "electric-interface")
 ylib.icon.icons:add("ylib", "graphics/icons", "steam-interface")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing-tech", 128, 0, 1)
+ylib.icon.icons:add("ylib", "graphics/icons", "filter", 64, 2, 0.5)
 
 
 -- --create a map with all types containing icon data
