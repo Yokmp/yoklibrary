@@ -409,8 +409,8 @@ function ylib.recipe.get_amount_in(recipe_name, ingredient_name)
     local recipe = data.raw.recipe[recipe_name]
     local amount = {0,0}
 
-    if ylib.recipe.ingredients then --add next() check?
-      for _, value in ipairs(ylib.recipe.ingredients) do
+    if recipe.ingredients then --add next() check?
+      for _, value in ipairs(recipe.ingredients) do
         if value.name and value.name == ingredient_name then
           amount = {value.amount or 1, value.amount or 1}
         elseif type(value[1]) == "string" and value[1] == ingredient_name then
@@ -418,8 +418,8 @@ function ylib.recipe.get_amount_in(recipe_name, ingredient_name)
         end
       end
     end
-    if ylib.recipe.normal and ylib.recipe.normal.ingredients then
-      for _, value in ipairs(ylib.recipe.normal.ingredients) do
+    if recipe.normal and recipe.normal.ingredients then
+      for _, value in ipairs(recipe.normal.ingredients) do
         if value.name and value.name == ingredient_name then
           amount[1] = value.amount or 1
         elseif type(value[1]) == "string" and value[1] == ingredient_name then
@@ -427,8 +427,8 @@ function ylib.recipe.get_amount_in(recipe_name, ingredient_name)
         end
       end
     end
-    if ylib.recipe.expensive and ylib.recipe.expensive.ingredients then
-      for _, value in ipairs(ylib.recipe.expensive.ingredients) do
+    if recipe.expensive and recipe.expensive.ingredients then
+      for _, value in ipairs(recipe.expensive.ingredients) do
         if value.name and value.name == ingredient_name then
           amount[2] = value.amount or 1
         elseif type(value[1]) == "string" and value[1] == ingredient_name then
