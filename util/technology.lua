@@ -173,30 +173,30 @@ end
 
 --//TODO make similar to get_composed_icon
 
----Returns icons for technology
----@param icon_name string must be a valid item name
----@param size? number
----@param scale? number multiplier
----@param shift? table
----@return table
-function technology_icon_compose(icon_name, size, scale, shift)
-  local icon = ylib.icon.get_icon_from_item(icon_name)
-  size = size or 128
-  scale = scale or (icon.icon_size/size)
-  return {
-    {
-      icon = icon.icon,
-      icon_size = icon.icon_size,
-      icon_mipmaps = icon.icon_mipmaps or 0,
-      scale = 1,
-      shift = shift or {0,5}
-    },
-    -- { --TODO default to missing?
-    --   icon = "__ylib__/graphics/technology/molten-drop.png",
-    --   icon_size = size,
-    --   scale = 1*scale,
-    --   shift = {0,0}
-    -- },
-  }
-end
+-- ---Returns icons for technology
+-- ---@param icon_name string must be a valid item name
+-- ---@param size? number
+-- ---@param scale? number multiplier
+-- ---@param shift? table
+-- ---@return table
+-- function technology_icon_compose(icon_name, size, scale, shift)
+--   local icon = ylib.icon.get_icon_from_item(icon_name)
+--   size = size or 128
+--   scale = scale or (icon.icon_size/size)
+--   return {
+--     {
+--       icon = icon.icon,
+--       icon_size = icon.icon_size,
+--       icon_mipmaps = icon.icon_mipmaps or 0,
+--       scale = 1,
+--       shift = shift or {0,5}
+--     },
+--     -- { --TODO default to missing?
+--     --   icon = "__ylib__/graphics/technology/molten-drop.png",
+--     --   icon_size = size,
+--     --   scale = 1*scale,
+--     --   shift = {0,0}
+--     -- },
+--   }
+-- end
 -- log(serpent.block(technology_icon_compose("aluminum-6061")))
