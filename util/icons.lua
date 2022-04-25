@@ -92,8 +92,8 @@ ylib.icon.icons:add("ylib", "graphics/icons", "filter", 64, 2, 0.5)
 ---Returns the icon data variant. Use the wrapper functions if possible.
 ---@param name string ``data.raw[type_table][name]``
 ---@param type_table? string if not set, uses the first matching type through ``ylib.util.get_type(name)``
----@param main_product? string ``false`` - use main_product's icon if the recipe has none
----@param icons_index? string ``1`` - the index of ``name{ icons{...}}`` to use
+---@param main_product? boolean ``false`` - use main_product's icon if the recipe has none
+---@param icons_index? integer ``1`` - the index of ``name{ icons{...}}`` to use
 ---@return table ``{icon: boolean, icons: boolean}``
 function ylib.icon.get_icon(name, type_table, main_product, icons_index)
   type_table = type_table or ylib.util.get_item_type(name)
