@@ -10,7 +10,7 @@ function ylib.recipe.set_enabled(recipe_name, enabled)
   if data.raw.recipe[recipe_name] then
     data.raw.recipe[recipe_name].normal.enabled = enabled[1]
     data.raw.recipe[recipe_name].expensive.enabled = enabled[2]
-    if loglevel then log(recipe_name.." enabled: ".. tostring(enabled[1]) ..", ".. tostring(enabled[2])) end
+    info(recipe_name.." enabled: ".. tostring(enabled[1]) ..", ".. tostring(enabled[2]))
   else
     warning("Unknown recipe: "..tostring(recipe_name))
   end
@@ -379,15 +379,15 @@ function ylib.recipe.get_energy_required(recipe_name)
   local time = {0.5, 0.5}
   if data.raw.recipe[recipe_name] then
     local data_recipe = data.raw.recipe[recipe_name]
-    if data.raw.recipe.energy_required then
-      time[1] = data.raw.recipe.energy_required or 0.5
-      time[2] = data.raw.recipe.energy_required or 0.5
+    if data_recipe.energy_required then
+      time[1] = data_recipe.energy_required or 0.5
+      time[2] = data_recipe.energy_required or 0.5
     end
-    if data.raw.recipe.normal then
-      time[1] = data.raw.recipe.normal.energy_required or 0.5
+    if data_recipe.normal then
+      time[1] = data_recipe.normal.energy_required or 0.5
     end
-    if data.raw.recipe.expensive then
-      time[2] = data.raw.recipe.expensive.energy_required or 0.5
+    if data_recipe.expensive then
+      time[2] = data_recipe.expensive.energy_required or 0.5
     end
   else
     warning("Unknown recipe: "..tostring(recipe_name))
