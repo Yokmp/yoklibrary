@@ -76,6 +76,7 @@ ylib.icon.icons:add("ylib", "graphics/icons", "steam-interface")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing")
 ylib.icon.icons:add("ylib", "graphics/icons", "missing-tech", 128, 0, 1)
 ylib.icon.icons:add("ylib", "graphics/icons", "filter", 64, 2, 0.5)
+ylib.icon.icons:add("ylib", "graphics/icons", "upgrade", 64, 0, 0.5)
 
 
 -- --create a map with all types containing icon data

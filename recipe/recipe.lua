@@ -239,11 +239,12 @@ end
 ---@param item_type? string needs to be set if the same name exists for several types
 ---@return table table List of recipe names
 function ylib.recipe.get_byingredient(item_name, item_type)
-  item_type = item_type or ylib.util.get_item_type(item_name)
-  if data.raw[item_type][item_name] then
+  -- item_type = item_type or ylib.util.get_item_type(item_name)
+  -- if data.raw[item_type][item_name] then
     local recipes = {}
 
     for recipe_name, data_recipe in pairs(data.raw.recipe) do
+
       if ylib.util.check_table(data.raw.recipe.ingredients) then
         for _, ingredient in ipairs(data.raw.recipe.ingredients) do
           if ingredient.name and ingredient.name == item_name then table.insert(recipes, recipe_name)
@@ -267,11 +268,12 @@ function ylib.recipe.get_byingredient(item_name, item_type)
           end
         end
       end
+
     end
   return recipes
-  else
-    warning(" Item not found: "..tostring(item_name))
-  end
+  -- else
+  --   warning(" Item not found: "..tostring(item_name))
+  -- end
 end
 -- log(serpent.block(get_recipes_byingredient("iron-ore")))
 -- log(serpent.block(get_recipes_byingredient("uranium-ore")))
@@ -518,3 +520,37 @@ end
 -- log(serpent.block( get_main_product( "explosives" ) ))
 -- log(serpent.block( get_main_product( "uranium-processing", "uranium-238" ) ))
 -- error("get_main_product()")
+
+
+----------
+-- TEST --
+----------
+
+
+---Returns boolean on ingredient checks or nil if the recipe has no ingredient field at all
+---@param recipe_name string
+---@param ingredient_name string
+---@return boolean|nil
+function ylib.recipe.has_ingredient(recipe_name, ingredient_name)
+  local ingredients = {}
+  ingredients = ylib.recipe.get_ingredients(recipe_name)
+
+  local function loop(t)
+    for _, value in pairs(t) do
+      if value.name == ingredient_name then return true end
+    end
+    return false
+  end
+
+  if ingredients.ingredients then
+    return loop(ingredients.ingredients)
+  end
+  if ingredients.normal then
+    return loop(ingredients.normal)
+  end
+  if ingredients.expensive then
+    return loop(ingredients.expensive)
+  end
+
+  return nil
+end
