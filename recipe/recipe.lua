@@ -561,7 +561,7 @@ function ylib.recipe.remove_ingredient(recipe_name, ingredient_name)
 end
 
 
----Removes an ingredient from the recipe
+---Removes an result from the recipe
 ---@param recipe_name string
 ---@param result_name string
 function ylib.recipe.remove_result(recipe_name, result_name)

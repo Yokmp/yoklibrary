@@ -52,8 +52,8 @@ ylib.icon.icons = {
 ---@param shift? vector
 ---@param tint? color
   add = function (self, mod_name, icon_path, icon_name, size, mipmaps, scale, shift, tint)
-    local t_icon = {icon = "__"..mod_name.."__/"..icon_path.."/"..icon_name..".png", icon_size = size or 64, icon_mipmaps = mipmaps or 4, scale = scale or 0.5,
-                    shift = shift or {0,0}, tint = tint or { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }}
+    local t_icon = {icon = "__"..mod_name.."__/"..icon_path.."/"..icon_name..".png", icon_size = size or 64, icon_mipmaps = mipmaps or 4,
+                    scale = scale or 0.5, shift = shift or {0,0}, tint = tint or { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }}
     if self[mod_name] then
       self[mod_name][icon_name] = t_icon
     else
@@ -109,8 +109,9 @@ function ylib.icon.get_icon(name, type_table, main_product, icons_index)
         icon.icon_size = _t[name].icon_size
         icon.icon_mipmaps = _t[name].icon_mipmaps or 0
         icon.scale = (32/_t[name].icon_size)
-      elseif _t[name].icons then
-        ylib.util.table_merge(icon, _t[name].icons[icons_index])
+      elseif _t[name].icons then --what if index is out of range?
+        -- ylib.util.table_merge(icon, _t[name].icons[icons_index]) -- this somehow results in weird tints
+        icon = util.copy(_t[name].icons[icons_index])
       elseif main_product and type_table == "recipe" then --?- search recipes too
         local _mp = ylib.recipe.get_main_product(name)[1] or name
         local _type = ylib.util.get_item_type(_mp)
