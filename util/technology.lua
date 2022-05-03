@@ -160,10 +160,26 @@ function ylib.technology.get_prerequisites(tech_name)
 end
 
 
+---Returns the prerequisites of a technology
+---@param tech_name string
+function ylib.technology.add_prerequisites(tech_name, prerequisites)
+  if data.raw.technology[tech_name] then
+    if type(prerequisites) == "table" then
+      local _t1 = ylib.technology.get_prerequisites(tech_name)
+      data.raw.technology[tech_name].prerequisites = ylib.util.table_merge(_t1, prerequisites)
+    else
+      warning("Prerequisites for "..tech_name.." is not a table!")
+    end
+  else
+    info("Technology "..tech_name.." has no prerequisites!")
+  end
+end
+
+
 ---Sets the parent of a technology which inherits all prerequisites and ingredients of the parent
 ---@param tech_name string
 ---@param parent_name string
----@param parent_as_prerequisite boolean use the parents prerquisites (false) or the parent as prerquisite(true)
+---@param parent_as_prerequisite? boolean use the parents prerquisites (false) or the parent as prerquisite(true)
 function ylib.technology.set_parent(tech_name, parent_name, parent_as_prerequisite)
   parent_as_prerequisite = parent_as_prerequisite or true
   local p_pre = ylib.technology.get_prerequisites(parent_name)

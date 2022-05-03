@@ -95,7 +95,7 @@ ylib.icon.icons:add("ylib", "graphics/icons", "upgrade", 64, 0, 0.5)
 ---@param type_table? string if not set, uses the first matching type through ``ylib.util.get_type(name)``
 ---@param main_product? boolean ``false`` - use main_product's icon if the recipe has none
 ---@param icons_index? integer ``1`` - the index of ``name{ icons{...}}`` to use
----@return table ``{icon: boolean, icons: boolean}``
+---@return icon
 function ylib.icon.get_icon(name, type_table, main_product, icons_index)
   type_table = type_table or ylib.util.get_item_type(name)
   icons_index = icons_index or 1
