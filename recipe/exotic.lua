@@ -68,7 +68,7 @@ end
 ---Sets a recipes results (fluid) temperature
 ---@param recipe_name string
 ---@param temperature table contains integers {normal, expensive}
----@param pattern string the string to find within the ingredient name
+---@param pattern string the string to find within the result name
 function ylib.recipe.set_result_temperature(recipe_name, temperature, pattern)
   if data.raw.recipe[recipe_name] then
     for index, value in ipairs(data.raw.recipe[recipe_name].normal.results) do
