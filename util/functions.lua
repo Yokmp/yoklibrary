@@ -1,7 +1,7 @@
 
 ---Returns the (item) type of ''name'''
 ---@param name string
----@return string
+---@return string|nil
 function ylib.util.get_item_type(name)
   local type_name = nil
   if type(name) == "string" then
@@ -23,11 +23,11 @@ end
 
 ---Returns the first match of name when it is a producing/consuming machine
 ---@param name string
----@return string
+---@return string|nil
 function ylib.util.get_machine_type(name)
   local type_name = nil
   if type(name) == "string" then
-    local type_list = {
+    local type_list = {         -- incomplete since space-age
       "assembling-machine", "furnace", "generator", "boiler", "offshore-pump", "reactor", "rocket-silo", "burner-generator",
     }
     for _, _t in pairs(type_list) do
@@ -97,7 +97,7 @@ end
 ---@param name string ore name
 ---@param resources? table get_minable_resources()
 function ylib.util.is_ore(name, resources)
-  resources = resources or ylib.util.get_minable_resouces(true)
+  resources = resources or ylib.util.get_minable_resouces()
 
   for _, table in pairs(resources) do
     for _, result in ipairs(table.results) do -- maybe modded resources have more than 1 result

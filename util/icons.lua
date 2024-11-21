@@ -3,11 +3,8 @@
 ---@field icon_size integer
 ---@field icon_mipmaps integer
 ---@field scale number
----@field shift vector
+---@field shift table
 ---@field tint color
-
----@class vector
----@field table number
 
 ---@class color
 ---@field r number
@@ -22,11 +19,11 @@ ylib.icon.icons = {
   ---@param mod_name string concatenates into ``"__"..mod_name.."__"``
   ---@param icon_name string
   ---@param scale? integer
-  ---@param shift? vector
+  ---@param shift? table
   ---@param tint? color
   ---@return icon - if the icon/key is ``nil`` the missing icon data is returned
   get = function (self, mod_name, icon_name, scale, shift, tint)
-    local proto = {} ---@type icon
+    local proto = {icon="",icon_size=0,icon_mipmaps=1,scale=1,shift={0,0},tint={r=0,g=0,b=0,a=1}} ---@type icon
     if self[mod_name] and self[mod_name][icon_name] then
       proto.icon          = self[mod_name][icon_name].icon
       proto.icon_size     = self[mod_name][icon_name].icon_size
@@ -49,7 +46,7 @@ ylib.icon.icons = {
 ---@param size? integer
 ---@param mipmaps? integer
 ---@param scale? number
----@param shift? vector
+---@param shift? table
 ---@param tint? color
   add = function (self, mod_name, icon_path, icon_name, size, mipmaps, scale, shift, tint)
     local t_icon = {icon = "__"..mod_name.."__/"..icon_path.."/"..icon_name..".png", icon_size = size or 64, icon_mipmaps = mipmaps or 4,
@@ -114,9 +111,9 @@ function ylib.icon.get_icon(name, type_table, main_product, icons_index)
         icon = util.copy(_t[name].icons[icons_index])
       elseif main_product and type_table == "recipe" then --?- search recipes too
         local _mp = ylib.recipe.get_main_product(name)[1] or name
-        local _type = ylib.util.get_item_type(_mp)
-        _mp = ylib.icon.get_icon(_type, _mp)
-        ylib.util.table_merge(icon, _mp)
+        local _type = ylib.util.get_item_type(_mp) or ""
+        local _icon = ylib.icon.get_icon(_type, _mp)
+        ylib.util.table_merge(icon, _icon)
       end
     else info("Not found: data.raw."..type_table.."."..tostring(name)) end
   else info("Not found: data.raw."..tostring(type_table)) end

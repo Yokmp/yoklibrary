@@ -17,6 +17,22 @@ function ylib.fluid.get_fluids(filter)
   return list
 end
 
+---Checks if the given string is a fluid
+---@param fluid string
+---@return boolean
+function ylib.fluid.is_fluid(fluid)
+  for _, value in pairs(ylib.fluid.get_fluids()) do
+    if value == fluid then return true end
+  end
+  return false
+end
+
+
+
+
+
+-- the next functions don't include fluid_box and pipe_connections!
+
 
 ---Returns true if the entity has a fluid box
 ---@param entity_name string
@@ -24,7 +40,7 @@ end
 ---@return boolean
 function ylib.fluid.has_fluid_box(entity_name, entity_type)
   entity_type = entity_type or ylib.util.get_machine_type(entity_name)
-  if data.raw[entity_type][entity_name] then
+  if entity_type and data.raw[entity_type][entity_name] then
     return data.raw[entity_type][entity_name].fluid_boxes and true
   end
   return false
@@ -34,17 +50,18 @@ end
 ---@param entity_name string
 ---@param production_type string
 ---@param entity_type? string must be set if the entity name exists in multiple types
----@return boolean
-function ylib.fluid.has_fluid_box_of_type(entity_name, production_type, entity_type)
+---@return table
+function ylib.fluid.get_fluid_box_production_types(entity_name, production_type, entity_type)
   entity_type = entity_type or ylib.util.get_machine_type(entity_name)
+  local list = {}
   if ylib.fluid.has_fluid_box(entity_name, entity_type) then
     for _, fluid_box in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
       if fluid_box.production_type == production_type then
-        return true
+        table.insert(list, production_type)
       end
     end
-    return false
   end
+  return list
 end
 
 
@@ -59,41 +76,3 @@ function ylib.fluid.get_fluid_box_amount(entity_name, entity_type)
   end
   return 0
 end
-
-
----Returns the amount of fluid boxes of a type
----@param entity_name string
----@param production_type string
----@param entity_type? string
----@return integer
-function ylib.fluid.get_fluid_box_amount_of_type(entity_name, production_type, entity_type)
-  entity_type = entity_type or ylib.util.get_machine_type(entity_name)
-  local amount = 0
-  if ylib.fluid.has_fluid_box_of_type(entity_name, production_type, entity_type) then
-    for _, fluid_box in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
-      if fluid_box.production_type == production_type then
-        amount = amount+1
-      end
-    end
-  end
-  return amount
-end
-
----Returns a table containing the amount of fluid box types
----@param entity_name string
----@param entity_type? string
----@return table ``{none = i, input = i, ["input-output"] = i, output = i,}``
-function ylib.fluid.get_fluid_box_types(entity_name, entity_type)
-  entity_type = entity_type or ylib.util.get_machine_type(entity_name)
-  local amount = {none = 0, input = 0, ["input-output"] = 0, output = 0,}
-  if ylib.fluid.has_fluid_box(entity_name, entity_type) then
-    for _, value in ipairs(data.raw[entity_type][entity_name].fluid_boxes) do
-      amount[value.production_type] = amount[value.production_type]+1
-    end
-  end
-  return amount
-end
-
-
--- log(serpent.block(get_recipe_result_count("advanced-oil-processing")))
--- error("TEST")

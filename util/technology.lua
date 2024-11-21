@@ -1,62 +1,11 @@
 
 --//TODO
 
-----------------
--- TECHNOLOGY --
-----------------
+-------------
+-- EFFECTS --
+-------------
 
--- ---Creates a new technology, uses localised_name or nil.
--- ---@param tech_name string
--- ---@param icon_name string
--- ---@param prerequisites table use technology_set_parent()
--- ---@param ingredient table or use technology_add_ingedient()
--- ---@param localized_name table ``Format: {"prefix", "name", "suffix"}``
--- ---@param order? string Format ``order.."["..tech_name.."]"``
--- ---@param count? number
--- ---@param time? number
--- function new_technology_ext(tech_name, icon_name, prerequisites, ingredient, localized_name, order, count, time)
---   localized_name = localized_name or nil
---   order = order or ""
-
---   local technology = {
---     type = "technology",
---     name = tech_name,
---     icons = technology_icon_compose(icon_name),
---     effects = {},
---     prerequisites = prerequisites,
---     unit =
---     {
---       count = count or 75,
---       ingredients = {ingredient},
---       time = time or 5
---     },
---     order = order.."["..tech_name.."]"
---   }
-
---   if type(localized_name) == "table" then
---     technology.localised_name = {"",
---       {(localized_name.prefix or localized_name[1])}, " ",
---       {(localized_name.name   or localized_name[2])}, " ",
---       {(localized_name.suffix or localized_name[3])}
---     }
---   end
-
-
---   data:extend({ technology })
--- end
-
--- ---Wrapper for new_technology_ext(), also sets the parent technology
--- ---@param tech_name string
--- ---@param icon_name string
--- ---@param parent_name string
--- ---@param localized_name? string omittable if icon and locale names match
--- function new_technology(tech_name, icon_name, parent_name, localized_name)
---   new_technology_ext(tech_name, icon_name, {}, {}, localized_name or icon_name)
---   technology_set_parent(tech_name, parent_name)
--- end
-
-
----Adds a recipe as effect to a technology
+---Adds an effect to a technology
 ---@param technology_name string
 ---@param recipe_name string
 function ylib.technology.add_effect(technology_name, recipe_name)
@@ -68,8 +17,7 @@ function ylib.technology.add_effect(technology_name, recipe_name)
   end
 end
 
-
----Removed a recipe from a technology
+---Removed an effects from a technology
 ---@param technology_name string
 ---@param recipe_name string
 function ylib.technology.remove_effect(technology_name, recipe_name)
@@ -85,19 +33,22 @@ function ylib.technology.remove_effect(technology_name, recipe_name)
   end
 end
 
+-----------------
+-- INGREDIENTS --
+-----------------
 
----Add an ingredient to a technology
+---Adds or replaces an ingredient by another
 ---@param technology_name string
----@param ingredient table
+---@param ingredient_name string
 ---@param amount number
-function ylib.technology.add_ingredient(technology_name, ingredient, amount)
+function ylib.technology.set_ingredient(technology_name, ingredient_name, amount)
+  ylib.technology.remove_ingredient(technology_name, ingredient_name)
   if data.raw.technology[technology_name] then
-    table.insert(data.raw.technology[technology_name].unit.ingredients, {ingredient, amount})
+    table.insert(data.raw.technology[technology_name].unit.ingredients, {ingredient_name, amount})
   else
     warning("Unknown technology or missing key: "..tostring(technology_name))
   end
 end
-
 
 ---Removes an ingredient
 ---@param technology_name string
@@ -109,22 +60,14 @@ function ylib.technology.remove_ingredient(technology_name, ingredient)
         table.remove(data.raw.technology[technology_name].unit.ingredients, index)
       end
     end
-  else
-    warning("Unknown technology or missing key: "..tostring(technology_name))
+  -- else
+  --   warning("Unknown technology or missing key: "..tostring(technology_name))
   end
 end
 
-
----Replaces an ingredient by another
----@param technology_name string
----@param ingredient_old string
----@param ingredient_new string
----@param amount number
-function ylib.technology.replace_ingredient(technology_name, ingredient_old, ingredient_new, amount)
-  ylib.technology.remove_ingredient(technology_name, ingredient_old)
-  ylib.technology.add_ingredient(technology_name, ingredient_new, amount)
-end
-
+------------
+-- HELPER --
+------------
 
 ---Returns which technologies enable a recipe.
 ---@param recipe_name string
@@ -160,11 +103,11 @@ function ylib.technology.get_prerequisites(tech_name)
 end
 
 
----Returns the prerequisites of a technology
+---Adds prerequisites to a technology
 ---@param tech_name string
 function ylib.technology.add_prerequisites(tech_name, prerequisites)
   if data.raw.technology[tech_name] then
-    if type(prerequisites) == "table" then
+    if ylib.util.check_table(prerequisites) then
       local _t1 = ylib.technology.get_prerequisites(tech_name)
       data.raw.technology[tech_name].prerequisites = ylib.util.table_merge(_t1, prerequisites)
     else

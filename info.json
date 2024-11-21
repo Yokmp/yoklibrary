@@ -1,11 +1,11 @@
 {
   "name": "ylib",
-  "version": "0.0.4",
+  "version": "0.4.19",
   "title": "Yokmp library",
   "author": "yokmp",
   "contact": "yokmp.sfgmail.com",
-  "factorio_version": "1.1",
+  "factorio_version": "2.0",
   "homepage": "https://github.com/Yokmp/ylib",
-  "dependencies": ["base >= 1.0.0"],
+  "dependencies": ["base >= 2.0", "? space-age", "? elevated-rails", "? quality"],
   "description": "Just a collection of functions"
 }

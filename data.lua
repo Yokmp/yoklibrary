@@ -16,3 +16,6 @@ require("util.technology")
 require("recipe.recipe")
 require("recipe.exotic")
 require("util.icons")
+
+
+-- if require("_testing") then log("TESTING") end

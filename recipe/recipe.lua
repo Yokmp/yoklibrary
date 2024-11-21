@@ -8,7 +8,7 @@
 
 ---Returns a recipes ingredients by difficulty (if available) or nil
 ---@param recipe_name string
----@return table|nil ``{ingredients={}, normal={}, expensive={}}`` - difficulty keys only if recipe has it
+---@return table ``{ingredients={}, normal={}, expensive={}}`` - difficulty keys only if recipe has it
 function ylib.recipe.get_ingredients(recipe_name)
   if type(recipe_name) == "string" and data.raw.recipe[recipe_name] then
     local data_recipe = data.raw.recipe[recipe_name]
@@ -20,23 +20,11 @@ function ylib.recipe.get_ingredients(recipe_name)
         ingredients.ingredients[i] = ylib.util.add_pairs(ingredient)
       end
     end
-    if data_recipe.normal and data_recipe.normal.ingredients then
-      ingredients.normal = {}
-      for i, ingredient in ipairs(data_recipe.normal.ingredients) do
-        ingredients.normal[i] = ylib.util.add_pairs(ingredient)
-      end
-    end
-    if data_recipe.expensive and data_recipe.expensive.ingredients then
-      ingredients.expensive = {}
-      for i, ingredient in ipairs(data_recipe.expensive.ingredients) do
-        ingredients.expensive[i] = ylib.util.add_pairs(ingredient)
-      end
-    end
     return ingredients
   else
     warning("get_ingredients(): Recipe not found: "..tostring(recipe_name))
   end
-  return nil
+  return {}
 end
 -- log(serpent.block(get_recipe_ingredients("tank")))
 -- log(serpent.block(get_recipe_ingredients("steel-furnace")))
@@ -58,22 +46,6 @@ function ylib.recipe.get_byingredient(item_name, item_type)
         for _, ingredient in ipairs(data.raw.recipe.ingredients) do
           if ingredient.name and ingredient.name == item_name then table.insert(recipes, recipe_name)
           elseif ingredient[1] and ingredient[1] == item_name then table.insert(recipes, recipe_name)
-          end
-        end
-      end
-
-      if data.raw.recipe.normal then
-        if ylib.util.check_table(data.raw.recipe.normal.ingredients) then
-          for _, ingredient in ipairs(data.raw.recipe.normal.ingredients) do
-            if ingredient.name == item_name then table.insert(recipes, recipe_name) end
-          end
-        end
-      end
-
-      if data.raw.recipe.expensive then
-        if ylib.util.check_table(data.raw.recipe.expensive.ingredients) then
-          for _, ingredient in ipairs(data.raw.recipe.expensive.ingredients) do
-            if ingredient.name == item_name then table.insert(recipes, recipe_name) end
           end
         end
       end
@@ -108,26 +80,6 @@ function ylib.recipe.get_results(recipe_name)
       _return.results[1] = ylib.util.add_pairs( {data_recipe.result, data_recipe.result_count} )
     end
 
-    if data_recipe.normal then
-      if ylib.util.check_table(data_recipe.normal.results) then
-        for i, result in pairs(data_recipe.normal.results) do
-          _return.normal[i] = ylib.util.add_pairs( result )
-        end
-      elseif data_recipe.normal.result then
-        _return.normal[1] = ylib.util.add_pairs( {data_recipe.normal.result, data_recipe.normal.result_count} )
-      end
-    end
-
-    if data_recipe.expensive then
-      if ylib.util.check_table(data_recipe.expensive.results) then
-        for i, result in pairs(data_recipe.expensive.results) do
-          _return.expensive[i] = ylib.util.add_pairs( result )
-        end
-      elseif data_recipe.expensive.result then
-        _return.expensive[1] = ylib.util.add_pairs( {data_recipe.expensive.result, data_recipe.expensive.result_count} )
-      end
-    end
-
   else
     warning(" Recipe not found: "..tostring(recipe_name))
   end
@@ -156,19 +108,6 @@ function ylib.recipe.get_byresult(result_name, type)
         if results.name
         and results.name == result_name
         and results.name == main_product then table.insert(recipes, recipe_name) end
-      end
-
-      for _, results in ipairs(recipe_results.normal) do
-        if results.name
-        and results.name == result_name
-        and results.name == main_product  then table.insert(recipes, recipe_name) end
-      end
-
-      for _, results in ipairs(recipe_results.expensive) do
-        if results.name
-        and results.name == result_name
-        and results.name == main_product
-        and not recipes.name == result_name then table.insert(recipes, recipe_name) end
       end
 
     end
@@ -211,48 +150,29 @@ end
 -- error("get_energy_required()")
 
 
----Returns the input amount of an item. Returns ``nil`` on error
+---Returns the amount of an ingredient. Returns ``{}`` on error
 ---@param recipe_name string
 ---@param ingredient_name string
----@return table|nil ``{normal, expensive}``
-function ylib.recipe.get_amount_in(recipe_name, ingredient_name)
+---@return integer
+function ylib.recipe.get_ingredient_amount(recipe_name, ingredient_name)
   if data.raw.recipe[recipe_name] then
     local recipe = data.raw.recipe[recipe_name]
-    local amount = {0,0}
+    local amount = 0
 
     if recipe.ingredients then --add next() check?
       for _, value in ipairs(recipe.ingredients) do
         if value.name and value.name == ingredient_name then
-          amount = {value.amount or 1, value.amount or 1}
-        elseif type(value[1]) == "string" and value[1] == ingredient_name then
-          amount = {value[2] or 1, value[2] or 1}
+          amount = value.amount or 1
         end
       end
     end
-    if recipe.normal and recipe.normal.ingredients then
-      for _, value in ipairs(recipe.normal.ingredients) do
-        if value.name and value.name == ingredient_name then
-          amount[1] = value.amount or 1
-        elseif type(value[1]) == "string" and value[1] == ingredient_name then
-          amount[1] = value[2] or 1
-        end
-      end
-    end
-    if recipe.expensive and recipe.expensive.ingredients then
-      for _, value in ipairs(recipe.expensive.ingredients) do
-        if value.name and value.name == ingredient_name then
-          amount[2] = value.amount or 1
-        elseif type(value[1]) == "string" and value[1] == ingredient_name then
-          amount[2] = value[2] or 1
-        end
-      end
-    end
+
     -- amount[1] = amount[1] > 0 and amount[1] or (amount[2] > 0 and amount[2] or 1)
     -- amount[2] = amount[2] > 0 and amount[2] or (amount[1] > 0 and amount[1] or 1)
     return amount
   end
   warning("Unknown recipe: "..recipe_name)
-  return nil
+  return 0 --should it return 1 as fallback?
 end
 -- log(serpent.block( get_recipe_amount_in( "express-splitter", "advanced-circuit" ) )) --10
 -- log(serpent.block( get_recipe_amount_in( "advanced-circuit", "electronic-circuit" ) )) --2
@@ -277,16 +197,6 @@ function ylib.recipe.get_amount_out(recipe_name, result_name)
           end
         end
       end
-      if results.normal then
-        for _, v in ipairs(results.normal) do
-          if v.name == result_name then amount[1] = v.amount end
-        end
-      end
-      if results.expensive then
-        for _, v in ipairs(results.expensive) do
-          if v.name == result_name then amount[2] = v.amount end
-        end
-      end
     return amount
   else
     warning("Unknown recipe: "..recipe_name)
@@ -308,16 +218,9 @@ function ylib.recipe.get_main_product(recipe_name)
     local recipe_data = data.raw.recipe[recipe_name]
     local _r = {}
 
-      if recipe_data.main_product then
-        _r = {recipe_data.main_product, recipe_data.main_product}
-      end
-      if recipe_data.normal and recipe_data.normal.main_product then
-        _r = {recipe_data.normal.main_product, recipe_data.normal.main_product}
-      end
-      if recipe_data.expensive and recipe_data.expensive.main_product then
-        _r[1] = _r[1] and recipe_data.expensive.main_product or _r[1]
-        _r[2] = recipe_data.expensive.main_product
-      end
+    if recipe_data.main_product then
+      _r = {recipe_data.main_product, recipe_data.main_product}
+    end
     return _r
   else
     warning("Unknown recipe: "..recipe_name)
@@ -336,13 +239,14 @@ end
 ----------
 
 
----Returns boolean on ingredient checks or nil if the recipe has no ingredient field at all
+---Returns boolean on ingredient checks or false if the recipe has no ingredient field at all
 ---@param recipe_name string
 ---@param ingredient_name string
----@return boolean|nil
+---@return boolean
 function ylib.recipe.has_ingredient(recipe_name, ingredient_name)
   local ingredients = {}
-  ingredients = ylib.recipe.get_ingredients(recipe_name)
+  local _t = ylib.recipe.get_ingredients(recipe_name)
+  if ylib.util.check_table(_t) then ingredients = _t end
 
   local function loop(t)
     for _, value in pairs(t) do
@@ -354,14 +258,7 @@ function ylib.recipe.has_ingredient(recipe_name, ingredient_name)
   if ingredients.ingredients then
     return loop(ingredients.ingredients)
   end
-  if ingredients.normal then
-    return loop(ingredients.normal)
-  end
-  if ingredients.expensive then
-    return loop(ingredients.expensive)
-  end
-
-  return nil
+  return false
 end
 
 
@@ -383,13 +280,6 @@ function ylib.recipe.has_result(recipe_name, result_name)
   if results.results then
     return loop(results.results)
   end
-  if results.normal then
-    return loop(results.normal)
-  end
-  if results.expensive then
-    return loop(results.expensive)
-  end
-
   return nil
 end
 
@@ -434,19 +324,13 @@ end
 ---Adds an inredient to a recipe
 ---@param recipe_name string
 ---@param ingredient string
----@param amount? table ``{nomral, expensive}``
+---@param amount? integer
 function ylib.recipe.add_ingredient(recipe_name, ingredient, amount)
   amount = amount or {1,1}
   if data.raw.recipe[recipe_name] then
     if type(ingredient) == "string" then
       if data.raw.recipe[recipe_name].ingredients then
-        table.insert(data.raw.recipe[recipe_name].ingredients, {name = ingredient, amount = amount[1]})
-      end
-      if data.raw.recipe[recipe_name].normal and data.raw.recipe[recipe_name].normal.ingredients then
-        table.insert(data.raw.recipe[recipe_name].normal.ingredients, {name = ingredient, amount = amount[1]})
-      end
-      if data.raw.recipe[recipe_name].expensive and data.raw.recipe[recipe_name].expensive.ingredients then
-        table.insert(data.raw.recipe[recipe_name].expensive.ingredients, {name = ingredient, amount = amount[2]})
+        table.insert(data.raw.recipe[recipe_name].ingredients, {name = ingredient, amount = amount})
       end
     else
       warning("Wrong type: "..type(ingredient))
@@ -480,25 +364,6 @@ function ylib.recipe.add_result(recipe_name, result, amount, type)
     if data.raw.recipe[recipe_name].results then
       table.insert(data.raw.recipe[recipe_name].results, normal)
     end
-
-    if data.raw.recipe[recipe_name].normal then
-      if data.raw.recipe[recipe_name].normal.result and not data.raw.recipe[recipe_name].normal.results then
-        data.raw.recipe[recipe_name].normal.results = {_r, normal}
-      end
-      if data.raw.recipe[recipe_name].normal.results then
-        table.insert(data.raw.recipe[recipe_name].results, normal)
-      end
-    end
-
-    if data.raw.recipe[recipe_name].expensive then
-      if data.raw.recipe[recipe_name].expensive.result and not data.raw.recipe[recipe_name].expensive.results then
-        data.raw.recipe[recipe_name].expensive.results = {_r, expensive}
-      end
-      if data.raw.recipe[recipe_name].expensive.results then
-        table.insert(data.raw.recipe[recipe_name].results, expensive)
-      end
-    end
-
   end
 end
 
@@ -511,12 +376,6 @@ function ylib.recipe.set_ingredients(recipe_name, ingredients)
     if type(ingredients) == "table" then
       if data.raw.recipe[recipe_name].ingredients then
         data.raw.recipe[recipe_name].ingredients = ingredients
-      end
-      if data.raw.recipe[recipe_name].normal then
-        data.raw.recipe[recipe_name].normal.ingredients = ingredients
-      end
-      if data.raw.recipe[recipe_name].expensive then
-        data.raw.recipe[recipe_name].expensive.ingredients = ingredients
       end
     else
       warning("Wrong type: "..type(ingredients))
@@ -544,12 +403,6 @@ function ylib.recipe.remove_ingredient(recipe_name, ingredient_name)
 
       if data.raw.recipe[recipe_name].ingredients then
         remove(data.raw.recipe[recipe_name].ingredients)
-      end
-      if data.raw.recipe[recipe_name].normal and data.raw.recipe[recipe_name].normal.ingredients then
-        remove(data.raw.recipe[recipe_name].normal.ingredients)
-      end
-      if data.raw.recipe[recipe_name].expensive and data.raw.recipe[recipe_name].expensive.ingredients then
-        remove(data.raw.recipe[recipe_name].expensive.ingredients)
       end
 
     else
@@ -583,12 +436,6 @@ function ylib.recipe.remove_result(recipe_name, result_name)
       if data.raw.recipe[recipe_name].results then
         remove(data.raw.recipe[recipe_name].results)
       end
-      if data.raw.recipe[recipe_name].normal and data.raw.recipe[recipe_name].normal.results then
-        remove(data.raw.recipe[recipe_name].normal.results)
-      end
-      if data.raw.recipe[recipe_name].expensive and data.raw.recipe[recipe_name].expensive.results then
-        remove(data.raw.recipe[recipe_name].expensive.results)
-      end
 
     else
       warning("string expected, got "..type(result_name))
@@ -606,7 +453,7 @@ end
 ---@param amount? integer
 function ylib.recipe.replace_ingredient(recipe_name, ingredient_remove, ingredient_add, amount)
   if data.raw.recipe[recipe_name] then
-    amount = amount or ylib.recipe.get_amount_in(recipe_name, ingredient_remove)
+    amount = amount or ylib.recipe.get_ingredient_amount(recipe_name, ingredient_remove)
     if amount == 0 then warning(recipe_name.." - "..ingredient_add.." couldn't find amount, defaulting to 1"); amount = 1 end
     ylib.recipe.remove_ingredient(recipe_name, ingredient_remove)
     ylib.recipe.add_ingredient(recipe_name, ingredient_add, amount)

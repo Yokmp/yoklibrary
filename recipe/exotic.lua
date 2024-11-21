@@ -5,11 +5,11 @@
 ---@param format? boolean removes every key with a value of 0
 ---@return table ``{results=0, normal=0, expensive=0}``
 function ylib.recipe.get_result_count(recipe_name, result_type, format)
+  local count = {results=0, normal=0, expensive=0}
   if data.raw.recipe[recipe_name] then
     result_type = result_type or "item"
     format = format or false
     local results = ylib.recipe.get_results(recipe_name)
-    local count = {results=0, normal=0, expensive=0}
     for _, value in ipairs(results.results) do
       if not value.type and result_type == "item" then count.results = count.results+1
       elseif value.type and value.type == result_type then count.results = count.results+1
@@ -33,10 +33,10 @@ function ylib.recipe.get_result_count(recipe_name, result_type, format)
       end
       count = _t
     end
-    return count
   else
     warning("Unknown recipe: "..tostring(recipe_name))
   end
+  return count
 end
 -- log(serpent.block(recipe.get_result_count("advanced-oil-processing", "fluid", true)))
 -- log(serpent.block(recipe.get_result_count("tank", nil, true)))
